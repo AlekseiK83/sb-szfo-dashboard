@@ -3,280 +3,604 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Силовой периметр СЗФО × продукты Сбера — аналитический дашборд</title>
+<title>Силовой периметр СЗФО — потенциал продуктов Сбера</title>
 <style>
-:root{
-  --sber:#21a038; --sber-dark:#0f7a24; --bg:#0d1117; --panel:#161b22;
-  --panel2:#1c2230; --text:#e6edf3; --muted:#8b949e; --line:#2d333b;
-  --high:#21a038; --medium:#d29922; --low:#6e7681;
-  --eco:#7c5cff; --core:#2f81f7;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  background:var(--bg);color:var(--text);line-height:1.5;padding:0 0 60px}
-.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
-header{background:linear-gradient(135deg,#0f7a24,#21a038);padding:32px 0;margin-bottom:28px;
-  border-bottom:1px solid var(--line)}
-header h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
-header p{color:#d7f5df;margin-top:6px;font-size:14px;max-width:820px}
-.badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
-  border-radius:20px;padding:3px 12px;font-size:12px;margin-top:12px}
-h2{font-size:18px;margin:28px 0 14px;padding-left:10px;border-left:3px solid var(--sber)}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:8px}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
-.kpi .val{font-size:30px;font-weight:700;color:var(--sber)}
-.kpi .lbl{color:var(--muted);font-size:13px;margin-top:4px}
-.filters{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 20px}
-.filters button{background:var(--panel);color:var(--text);border:1px solid var(--line);
-  border-radius:8px;padding:7px 14px;cursor:pointer;font-size:13px;transition:.15s}
-.filters button:hover{border-color:var(--sber)}
-.filters button.active{background:var(--sber);border-color:var(--sber);color:#fff;font-weight:600}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:20px}
-.bar-row{display:flex;align-items:center;gap:12px;margin:9px 0;font-size:13px}
-.bar-row .name{flex:0 0 340px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar-track{flex:1;background:var(--panel2);border-radius:6px;height:22px;position:relative;overflow:hidden}
-.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;
-  padding-right:8px;font-size:11px;font-weight:700;color:#fff;transition:width .5s}
-.tag{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700;flex:0 0 auto}
-.tag.eco{background:var(--eco);color:#fff}.tag.core{background:var(--core);color:#fff}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
-th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
-.cell{display:inline-block;min-width:44px;text-align:center;padding:4px 8px;border-radius:6px;
-  font-weight:700;color:#fff;font-size:12px}
-.dept-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
-.dept-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px}
-.dept-head h3{font-size:16px}
-.dept-meta{color:var(--muted);font-size:12px;margin-top:3px}
-.chips{display:flex;gap:8px;flex-wrap:wrap}
-.pb{background:linear-gradient(135deg,rgba(33,160,56,.16),rgba(124,92,255,.14));
-  border:1px solid rgba(33,160,56,.4);border-radius:12px;padding:15px 17px;margin:4px 0 14px}
-.pb-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--sber);font-weight:700}
-.pb-head{font-size:16px;font-weight:700;margin:5px 0 3px;color:var(--text)}
-.pb-top{font-size:13px;color:var(--muted);margin-bottom:10px}
-.pb-top b{color:#fff;background:var(--sber);padding:1px 8px;border-radius:5px;font-size:12px}
-.pb-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
-.pb-block .t{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
-.pb-block ul{list-style:none;padding:0}
-.pb-block li{font-size:12.5px;padding:3px 0 3px 16px;position:relative;color:var(--text)}
-.pb-block li:before{content:"\25b8";position:absolute;left:0;color:var(--sber)}
-.pb-focus{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.pb-chip{font-size:11px;padding:3px 9px;border-radius:14px;border:1px solid var(--line);background:var(--panel2)}
-.pb-chip.on{border-color:var(--sber);color:#8ee6a0}
-.pb-chip .sc{font-weight:700;color:var(--sber);margin-left:4px}
-.pb-angle{font-size:12.5px;color:#cfe8d4;margin-top:10px;line-height:1.5}
-.pb-avoid{font-size:12px;color:#e0b978;margin-top:7px}
-@media(max-width:600px){.pb-grid{grid-template-columns:1fr}}
-.chip{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:3px 11px;font-size:11px;color:var(--muted)}
-.rec{border:1px solid var(--line);border-radius:10px;padding:13px;margin-top:10px;background:var(--panel2)}
-.rec-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.rec-top .pname{font-weight:600;font-size:14px}
-.rec-sub{color:var(--muted);font-size:12px;margin-top:5px}
-.comp{color:var(--muted);font-size:12px;margin-top:6px}
-.note{background:rgba(124,92,255,.1);border-left:3px solid var(--eco);border-radius:6px;
-  padding:8px 11px;margin-top:9px;font-size:12px;color:#c9bdff}
-.factors{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11px;color:var(--muted)}
-.factors b{color:var(--text)}
-footer{color:var(--muted);font-size:12px;text-align:center;margin-top:36px;padding-top:20px;border-top:1px solid var(--line)}
-.disclaimer{background:rgba(210,153,34,.1);border:1px solid rgba(210,153,34,.3);border-radius:10px;
-  padding:14px 18px;font-size:12.5px;color:#e3c88a;margin-bottom:24px}
-@media(max-width:768px){.kpis{grid-template-columns:repeat(2,1fr)}.bar-row .name{flex:0 0 150px}
-  header h1{font-size:20px}}
+  :root {
+    --sber: #21a038;
+    --sber-dim: #178a2d;
+    --sber-glow: rgba(33, 160, 56, 0.15);
+    --bg: #0f1114;
+    --panel: #14171a;
+    --panel-hi: #1a1d21;
+    --border: #2a2e33;
+    --text: #e8eaed;
+    --muted: #8a9199;
+    --high: #21a038;
+    --medium: #d4a017;
+    --low: #4a4d52;
+    --red: #e05555;
+    --violet: #8b5cf6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  header.sticky {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15, 17, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  header.sticky h1 {
+    margin: 0; font-size: 16px; font-weight: 600;
+    display: flex; align-items: center; gap: 10px;
+  }
+  header.sticky .logo-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--sber); box-shadow: 0 0 12px var(--sber-glow);
+  }
+  header.sticky .meta {
+    font-size: 11px; color: var(--muted);
+  }
+  main {
+    max-width: 1400px; margin: 0 auto; padding: 24px;
+  }
+  section { margin-bottom: 40px; }
+  h2 {
+    font-size: 20px; font-weight: 500; margin: 0 0 6px 0;
+    color: var(--text);
+  }
+  h2 .accent { color: var(--sber); }
+  .section-desc { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+  /* KPI strip */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-bottom: 32px;
+  }
+  .kpi {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px 16px;
+  }
+  .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi .value { font-size: 24px; font-weight: 600; margin-top: 4px; color: var(--sber); }
+  .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  /* Матрица */
+  .matrix-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  table.matrix {
+    width: 100%; border-collapse: collapse; font-size: 12px;
+    background: var(--panel);
+  }
+  table.matrix th, table.matrix td {
+    padding: 8px 10px; text-align: center;
+    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.matrix thead th {
+    background: var(--panel-hi); font-weight: 500;
+    color: var(--muted); font-size: 11px;
+    position: sticky; top: 0;
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    padding: 10px 6px; min-width: 32px; max-width: 32px;
+  }
+  table.matrix thead th.corner {
+    writing-mode: horizontal-tb; transform: none;
+    text-align: left; min-width: 240px;
+  }
+  table.matrix tbody th {
+    background: var(--panel-hi); text-align: left;
+    padding: 10px 12px; font-weight: 500; min-width: 240px;
+    position: sticky; left: 0; z-index: 5;
+    border-right: 2px solid var(--border);
+  }
+  table.matrix tbody th .staff { font-size: 10px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  table.matrix tbody th .region { font-size: 10px; color: var(--muted); font-weight: 400; }
+
+  .score-cell {
+    position: relative; cursor: pointer;
+    transition: transform 0.1s;
+    font-weight: 600;
+  }
+  .score-cell:hover { transform: scale(1.08); z-index: 3; }
+  .score-cell.tier-HIGH   { background: rgba(33, 160, 56, 0.35); color: #fff; }
+  .score-cell.tier-MEDIUM { background: rgba(212, 160, 23, 0.28); color: #fff; }
+  .score-cell.tier-LOW    { background: rgba(74, 77, 82, 0.35);  color: var(--muted); }
+
+  .score-cell .why-btn {
+    position: absolute; top: 1px; right: 1px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15); color: #fff;
+    font-size: 9px; line-height: 14px; text-align: center;
+    border: none; cursor: pointer; opacity: 0; padding: 0;
+    transition: opacity 0.15s;
+  }
+  .score-cell:hover .why-btn { opacity: 1; }
+  .score-cell .why-btn:hover { background: rgba(255, 255, 255, 0.35); }
+
+  /* Легенда */
+  .legend {
+    display: flex; gap: 16px; font-size: 11px; color: var(--muted);
+    margin-top: 8px; align-items: center;
+  }
+  .legend .sw {
+    display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+    margin-right: 6px; vertical-align: middle;
+  }
+
+  /* Карточки ведомств */
+  .agency-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .agency-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 18px; display: flex; flex-direction: column;
+  }
+  .agency-card .head { display: flex; justify-content: space-between; align-items: start; }
+  .agency-card .name { font-weight: 600; font-size: 15px; }
+  .agency-card .staff-badge {
+    font-size: 11px; color: var(--muted);
+    background: var(--panel-hi); padding: 2px 8px; border-radius: 12px;
+  }
+  .agency-card .region { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  .playbook-badge {
+    background: linear-gradient(135deg, var(--sber-glow), rgba(139, 92, 246, 0.10));
+    border: 1px solid var(--sber-dim);
+    padding: 10px 12px; border-radius: 6px;
+    margin: 12px 0 8px 0;
+    font-size: 12px;
+  }
+  .playbook-badge .tag {
+    display: inline-block; font-size: 10px; color: var(--sber);
+    background: var(--sber-glow); padding: 1px 6px; border-radius: 3px;
+    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .playbook-badge .top-product { font-weight: 600; margin-bottom: 4px; }
+  .playbook-badge .angle { color: var(--text); }
+
+  .agency-competitor-strip {
+    background: var(--bg); border-left: 3px solid var(--sber);
+    padding: 8px 12px; margin: 4px 0 10px 0; font-size: 11px;
+    border-radius: 3px;
+  }
+  .agency-competitor-strip .label { color: var(--muted); margin-right: 6px; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+  .agency-competitor-strip .rival {
+    display: inline-block; margin-right: 10px; color: #f0a0a0;
+  }
+  .agency-competitor-strip .rival b { color: #f5c8c8; }
+
+  .top-scores {
+    margin-top: auto; padding-top: 12px; border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .top-scores .item {
+    background: var(--panel-hi); border-radius: 4px; padding: 8px;
+    text-align: center;
+  }
+  .top-scores .item .score { font-size: 18px; font-weight: 600; color: var(--sber); }
+  .top-scores .item .name { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+  /* Матрица конкурентов */
+  .competitor-filter {
+    display: flex; gap: 12px; align-items: center; margin-bottom: 12px;
+  }
+  .competitor-filter select {
+    background: var(--panel-hi); color: var(--text); border: 1px solid var(--border);
+    padding: 6px 10px; border-radius: 4px; font-family: inherit; font-size: 13px;
+  }
+  .competitor-meta { color: var(--muted); font-size: 12px; }
+  .competitor-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+    overflow: hidden;
+  }
+  .competitor-table th, .competitor-table td {
+    padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left;
+    vertical-align: top;
+  }
+  .competitor-table th { color: var(--muted); font-weight: 500; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.5px; background: var(--panel-hi); }
+  .competitor-table tr:last-child td { border-bottom: none; }
+  .competitor-table tr.sber-row { background: var(--sber-glow); }
+  .competitor-table .usp { color: #9fd8ac; font-size: 12px; }
+  .competitor-table .weakness { color: #f0a0a0; font-size: 12px; margin-top: 4px; }
+  .competitor-table .rate-cell { font-weight: 600; }
+  .competitor-table a { color: var(--sber); text-decoration: none; }
+  .competitor-table a:hover { text-decoration: underline; }
+  .stale-badge {
+    background: #b58900; color: #000; padding: 1px 5px;
+    border-radius: 3px; font-size: 9px; margin-left: 4px; font-weight: 600;
+  }
+
+  /* Модалка */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
+    animation: fade 0.15s ease;
+  }
+  .modal-backdrop.active { display: flex; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: var(--panel-hi); border: 1px solid var(--sber);
+    border-radius: 8px; padding: 24px 28px;
+    max-width: 680px; width: 92%; max-height: 84vh; overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  .modal h3 { margin: 0 0 4px 0; color: var(--sber); font-size: 18px; }
+  .modal .score-line {
+    font-size: 14px; color: var(--text); margin-bottom: 16px;
+  }
+  .modal .score-line b { color: var(--sber); font-size: 20px; }
+  .modal .tier-chip {
+    display: inline-block; padding: 2px 8px; border-radius: 3px;
+    font-size: 11px; margin-left: 8px; font-weight: 600;
+  }
+  .modal .tier-chip.HIGH { background: var(--high); color: #fff; }
+  .modal .tier-chip.MEDIUM { background: var(--medium); color: #000; }
+  .modal .tier-chip.LOW { background: var(--low); color: #fff; }
+  .modal .formula-block {
+    background: var(--bg); border-radius: 6px; padding: 14px 16px;
+    margin: 12px 0; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+  .modal .formula-row {
+    display: flex; justify-content: space-between; padding: 5px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .modal .formula-row:last-child { border-bottom: none; }
+  .modal .formula-row .name { color: var(--muted); }
+  .modal .formula-row .value { color: var(--text); }
+  .modal .formula-row .weight { color: var(--muted); font-size: 10px; margin-left: 8px; }
+  .modal .formula-row .contrib { color: var(--sber); font-weight: 600; min-width: 50px; text-align: right; }
+  .modal .close-btn {
+    position: absolute; top: 12px; right: 16px; background: none; border: none;
+    color: var(--muted); font-size: 24px; cursor: pointer; padding: 0;
+    width: 28px; height: 28px; line-height: 1;
+  }
+  .modal .close-btn:hover { color: var(--text); }
+  .modal .foot {
+    margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--muted);
+  }
+  .modal .foot a { color: var(--sber); }
+
+  /* Footer */
+  footer {
+    max-width: 1400px; margin: 40px auto 0; padding: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 12px;
+  }
+  footer a { color: var(--sber); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* Утилиты */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;
+    background: var(--panel-hi); color: var(--muted);
+  }
+  .badge.demo { border: 1px solid var(--medium); color: var(--medium); }
 </style>
 </head>
 <body>
-<header><div class="wrap">
-  <h1>Силовой периметр СЗФО × продукты Сбера</h1>
-  <p>Аналитическая модель потенциала продаж: сбор публикаций прессы по силовым
-  ведомствам Северо-Западного округа, оценка конкурентности и скоринг возможностей
-  по банковским и экосистемным продуктам Сбера.</p>
-  <span class="badge">Демонстрационная модель · данные носят иллюстративный характер</span>
-</div></header>
-<div class="wrap" id="app"></div>
-<footer><div class="wrap">
-  Аналитический инструмент · периметр: госсиловые ведомства СЗФО (ОПК исключён) ·
-  скоринг: core (прямая продажа) + eco (бенефит через соцпакет)
-</div></footer>
-<script id="report-data" type="application/json">{"reports": [{"holding": "ГУ МВД по г. Санкт-Петербургу и Ленобласти", "type": "mvd", "region": "Санкт-Петербург", "employees": 42000, "publications_count": 3, "signal_breakdown": {"official": 2, "expert": 0, "holiday": 0, "user": 1}, "avg_sentiment": 0.0, "playbook": {"headline": "Массовые госплатежи граждан + экосистема личному составу", "top_product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "top_score": 92.6, "focus": [{"id": "acquiring_fines", "product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "score": 86.2, "matched": true}, {"id": "eco_sberprime", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 92.6, "matched": true}, {"id": "consumer_loan", "product": "Потребкредиты и рефинансирование для личного состава", "score": 73.2, "matched": true}, {"id": "eco_spasibo", "product": "Программа лояльности СберСпасибо", "score": null, "matched": false}], "strengths": ["Крупнейшая эквайринговая сеть для оплаты штрафов ГИБДД и госпошлин", "Мгновенные платежи через СБП и QR-код", "Экосистема как бенефит без затрат ведомства"], "angle": "Заходить через сервис для граждан (оплата штрафов) — операционный объём, где Сбер вне конкуренции. Личному составу — розница и подписки поверх карт, даже если довольствие идёт через ВТБ.", "avoid": "Не биться за зарплатный контракт напрямую — там доминирует ВТБ."}, "recommendations": [{"product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "segment": "экосистема/подписка", "demand_signal": 20, "competitiveness": {"competitors": ["Яндекс Плюс", "VK Combo", "Т-Банк (Pro)"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": "Ключевое конкурентное преимущество Сбера: у ВТБ/ГПБ (банков силовиков) НЕТ своей экосистемы. Продаётся не банку, а как корпоративный бенефит личному составу поверх зарплатного проекта — повышает липкость даже там, где довольствие идёт через ВТБ. Мультипликатор удержания клиента."}, "potential": {"score": 92.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.9, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "segment": "госплатежи", "demand_signal": 26, "competitiveness": {"competitors": ["ГИС ГМП / Госуслуги", "ВТБ", "Тинькофф"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": ""}, "potential": {"score": 86.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.9, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Самокат / Купер (корпоративная доставка, питание)", "segment": "экосистема/e-com", "demand_signal": 4, "competitiveness": {"competitors": ["Яндекс Лавка/Еда", "Вкусвилл", "Ozon fresh"], "competition_intensity": 0.75, "sber_position": 0.85, "strategic_note": ""}, "potential": {"score": 83.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.2, "позиция_Сбера": 0.85, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Зарплатный проект бюджетникам (карты «Мир»)", "segment": "HR/массовый", "demand_signal": 27, "competitiveness": {"competitors": ["ВТБ (доминирует у силовиков)", "Газпромбанк", "Почта Банк"], "competition_intensity": 0.75, "sber_position": 0.5, "strategic_note": "У силовиков (МВД, Минобороны, Росгвардия) исторически доминирует ВТБ — денежное довольствие военнослужащих идёт через него по госконтрактам. Сберу нужно заходить точечно: гражданский персонал ведомств, терорганы без централизованного зарплатного контракта, доп. сервисы."}, "potential": {"score": 76.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.5, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Потребкредиты и рефинансирование для личного состава", "segment": "розница/кредиты", "demand_signal": 13, "competitiveness": {"competitors": ["ВТБ", "Почта Банк", "Совкомбанк"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 73.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.65, "позиция_Сбера": 0.8, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "GigaChat / AI-решения для госсектора", "segment": "ИТ/ИИ", "demand_signal": 8, "competitiveness": {"competitors": ["Яндекс (YandexGPT)", "VK", "Ростелеком"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 65.8, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.4, "позиция_Сбера": 0.8, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "СберСтрахование / НПФ / ДМС (соцпакет)", "segment": "соцпакет", "demand_signal": 6, "competitiveness": {"competitors": ["СОГАЗ", "ВСК (страховщик Минобороны)", "Ингосстрах"], "competition_intensity": 0.75, "sber_position": 0.7, "strategic_note": ""}, "potential": {"score": 60.2, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.3, "позиция_Сбера": 0.7, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "ДБО и бюджетные платежи для госорганов", "segment": "госсектор/транзакции", "demand_signal": 7, "competitiveness": {"competitors": ["ВТБ", "Казначейство России (СУФД)", "Газпромбанк"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": "Бюджетные потоки идут через Казначейство (СУФД), банк — только агент. Возможность — эквайринг госпошлин/штрафов и сервисы для граждан-клиентов ведомства."}, "potential": {"score": 59.2, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.35, "позиция_Сбера": 0.6, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Военная ипотека / льготная ипотека силовикам", "segment": "розница/ипотека", "demand_signal": 5, "competitiveness": {"competitors": ["ВТБ", "Газпромбанк (оператор НИС)", "Дом.РФ"], "competition_intensity": 0.75, "sber_position": 0.45, "strategic_note": "Оператор НИС (накопительно-ипотечной системы) исторически завязан на ВТБ и ГПБ. Сбер конкурирует ставкой и скоростью на вторичном/льготном сегменте."}, "potential": {"score": 52.5, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.25, "позиция_Сбера": 0.45, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Cloud.ru (защищённое / аттестованное облако)", "segment": "ИТ/облако", "demand_signal": 2, "competitiveness": {"competitors": ["Ростелеком (РТК-ЦОД, гос №1)", "Яндекс Облако", "VK Cloud"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": ""}, "potential": {"score": 51.8, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.1, "позиция_Сбера": 0.6, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}]}, {"holding": "Западный военный округ / ЛенВО (Минобороны)", "type": "minoborony", "region": "Санкт-Петербург", "employees": 180000, "publications_count": 3, "signal_breakdown": {"official": 3, "expert": 0, "holiday": 0, "user": 0}, "avg_sentiment": 0.0, "playbook": {"headline": "Телемедицина удалённым частям + экосистемный соцпакет", "top_product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "top_score": 86.6, "focus": [{"id": "eco_zdorovie", "product": "СберЗдоровье (телемедицина, ДМС-сервис для личного состава)", "score": null, "matched": false}, {"id": "eco_sberprime", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 86.6, "matched": true}, {"id": "eco_samokat_kuper", "product": "Самокат / Купер (корпоративная доставка, питание)", "score": 83.1, "matched": true}, {"id": "mil_mortgage", "product": "Военная ипотека / льготная ипотека силовикам", "score": 72.5, "matched": true}], "strengths": ["СберЗдоровье — телемедицина там, где нет ведомственных госпиталей", "Единственная полноценная экосистема среди банков силовиков", "Скорость и ставка по льготной ипотеке на вторичном рынке"], "angle": "Закрывать реальную боль: удалённые гарнизоны Севера и заставы СЗФО без доступа к медицине. Экосистема — как нематериальная мотивация состава.", "avoid": "НИС (военная ипотека) и обязательное страхование — вотчина ВТБ и СОГАЗ."}, "recommendations": [{"product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "segment": "экосистема/подписка", "demand_signal": 8, "competitiveness": {"competitors": ["Яндекс Плюс", "VK Combo", "Т-Банк (Pro)"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": "Ключевое конкурентное преимущество Сбера: у ВТБ/ГПБ (банков силовиков) НЕТ своей экосистемы. Продаётся не банку, а как корпоративный бенефит личному составу поверх зарплатного проекта — повышает липкость даже там, где довольствие идёт через ВТБ. Мультипликатор удержания клиента."}, "potential": {"score": 86.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.4, "позиция_Сбера": 0.9, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Самокат / Купер (корпоративная доставка, питание)", "segment": "экосистема/e-com", "demand_signal": 4, "competitiveness": {"competitors": ["Яндекс Лавка/Еда", "Вкусвилл", "Ozon fresh"], "competition_intensity": 0.75, "sber_position": 0.85, "strategic_note": ""}, "potential": {"score": 83.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.2, "позиция_Сбера": 0.85, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "СберСтрахование / НПФ / ДМС (соцпакет)", "segment": "соцпакет", "demand_signal": 29, "competitiveness": {"competitors": ["СОГАЗ", "ВСК (страховщик Минобороны)", "Ингосстрах"], "competition_intensity": 0.75, "sber_position": 0.55, "strategic_note": ""}, "potential": {"score": 77.5, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.55, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "СберМобайл (корпоративная связь)", "segment": "экосистема/telecom", "demand_signal": 3, "competitiveness": {"competitors": ["МТС", "МегаФон", "Билайн", "Tele2"], "competition_intensity": 1.0, "sber_position": 0.7, "strategic_note": ""}, "potential": {"score": 77.5, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.15, "позиция_Сбера": 0.7, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.5}}}, {"product": "Зарплатный проект бюджетникам (карты «Мир»)", "segment": "HR/массовый", "demand_signal": 27, "competitiveness": {"competitors": ["ВТБ (доминирует у силовиков)", "Газпромбанк", "Почта Банк"], "competition_intensity": 0.75, "sber_position": 0.4, "strategic_note": "У силовиков (МВД, Минобороны, Росгвардия) исторически доминирует ВТБ — денежное довольствие военнослужащих идёт через него по госконтрактам. Сберу нужно заходить точечно: гражданский персонал ведомств, терорганы без централизованного зарплатного контракта, доп. сервисы."}, "potential": {"score": 73.8, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.4, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Военная ипотека / льготная ипотека силовикам", "segment": "розница/ипотека", "demand_signal": 29, "competitiveness": {"competitors": ["ВТБ", "Газпромбанк (оператор НИС)", "Дом.РФ"], "competition_intensity": 0.75, "sber_position": 0.35, "strategic_note": "Оператор НИС (накопительно-ипотечной системы) исторически завязан на ВТБ и ГПБ. Сбер конкурирует ставкой и скоростью на вторичном/льготном сегменте."}, "potential": {"score": 72.5, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.35, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "GigaChat / AI-решения для госсектора", "segment": "ИТ/ИИ", "demand_signal": 3, "competitiveness": {"competitors": ["Яндекс (YandexGPT)", "VK", "Ростелеком"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 58.2, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.15, "позиция_Сбера": 0.8, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Cloud.ru (защищённое / аттестованное облако)", "segment": "ИТ/облако", "demand_signal": 2, "competitiveness": {"competitors": ["Ростелеком (РТК-ЦОД, гос №1)", "Яндекс Облако", "VK Cloud"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": ""}, "potential": {"score": 51.8, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.1, "позиция_Сбера": 0.6, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}]}, {"holding": "УФСИН по Санкт-Петербургу и Ленобласти", "type": "fsin", "region": "Санкт-Петербург", "employees": 15000, "publications_count": 3, "signal_breakdown": {"official": 1, "expert": 1, "holiday": 0, "user": 1}, "avg_sentiment": 0.0, "playbook": {"headline": "Цифровизация УИС + розница и соцпакет сотрудникам", "top_product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "top_score": 75.1, "focus": [{"id": "gigachat_ai", "product": "GigaChat / AI-решения для госсектора", "score": 63.2, "matched": true}, {"id": "consumer_loan", "product": "Потребкредиты и рефинансирование для личного состава", "score": 51.2, "matched": true}, {"id": "eco_sberprime", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 75.1, "matched": true}, {"id": "eco_zdorovie", "product": "СберЗдоровье (телемедицина, ДМС-сервис для личного состава)", "score": null, "matched": false}], "strengths": ["GigaChat и автоматизация учёта в УИС", "Потребкредиты сотрудникам колоний и СИЗО", "Телемедицина для учреждений в удалённых районах"], "angle": "Активный набор персонала = свежая база для зарплатных и кредитных продуктов. ИИ-решения под документооборот и учёт спецконтингента.", "avoid": "Крупные ИТ-инфраструктурные контракты часто уходят госоператорам."}, "recommendations": [{"product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "segment": "экосистема/подписка", "demand_signal": 24, "competitiveness": {"competitors": ["Яндекс Плюс", "VK Combo", "Т-Банк (Pro)"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": "Ключевое конкурентное преимущество Сбера: у ВТБ/ГПБ (банков силовиков) НЕТ своей экосистемы. Продаётся не банку, а как корпоративный бенефит личному составу поверх зарплатного проекта — повышает липкость даже там, где довольствие идёт через ВТБ. Мультипликатор удержания клиента."}, "potential": {"score": 75.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.9, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "СберСтрахование / НПФ / ДМС (соцпакет)", "segment": "соцпакет", "demand_signal": 17, "competitiveness": {"competitors": ["СОГАЗ", "ВСК (страховщик Минобороны)", "Ингосстрах"], "competition_intensity": 0.75, "sber_position": 0.7, "strategic_note": ""}, "potential": {"score": 66.8, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.85, "позиция_Сбера": 0.7, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Зарплатный проект бюджетникам (карты «Мир»)", "segment": "HR/массовый", "demand_signal": 30, "competitiveness": {"competitors": ["ВТБ (доминирует у силовиков)", "Газпромбанк", "Почта Банк"], "competition_intensity": 0.75, "sber_position": 0.5, "strategic_note": "У силовиков (МВД, Минобороны, Росгвардия) исторически доминирует ВТБ — денежное довольствие военнослужащих идёт через него по госконтрактам. Сберу нужно заходить точечно: гражданский персонал ведомств, терорганы без централизованного зарплатного контракта, доп. сервисы."}, "potential": {"score": 66.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.5, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Самокат / Купер (корпоративная доставка, питание)", "segment": "экосистема/e-com", "demand_signal": 4, "competitiveness": {"competitors": ["Яндекс Лавка/Еда", "Вкусвилл", "Ozon fresh"], "competition_intensity": 0.75, "sber_position": 0.85, "strategic_note": ""}, "potential": {"score": 65.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.2, "позиция_Сбера": 0.85, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "GigaChat / AI-решения для госсектора", "segment": "ИТ/ИИ", "demand_signal": 13, "competitiveness": {"competitors": ["Яндекс (YandexGPT)", "VK", "Ростелеком"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 63.2, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.65, "позиция_Сбера": 0.8, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Кибербезопасность (BI.ZONE)", "segment": "ИБ", "demand_signal": 7, "competitiveness": {"competitors": ["Positive Technologies", "Лаборатория Касперского", "Ростелеком-Солар"], "competition_intensity": 0.75, "sber_position": 0.7, "strategic_note": ""}, "potential": {"score": 51.8, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.35, "позиция_Сбера": 0.7, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Потребкредиты и рефинансирование для личного состава", "segment": "розница/кредиты", "demand_signal": 5, "competitiveness": {"competitors": ["ВТБ", "Почта Банк", "Совкомбанк"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 51.2, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.25, "позиция_Сбера": 0.8, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Cloud.ru (защищённое / аттестованное облако)", "segment": "ИТ/облако", "demand_signal": 8, "competitiveness": {"competitors": ["Ростелеком (РТК-ЦОД, гос №1)", "Яндекс Облако", "VK Cloud"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": ""}, "potential": {"score": 50.8, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.4, "позиция_Сбера": 0.6, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Военная ипотека / льготная ипотека силовикам", "segment": "розница/ипотека", "demand_signal": 9, "competitiveness": {"competitors": ["ВТБ", "Газпромбанк (оператор НИС)", "Дом.РФ"], "competition_intensity": 0.75, "sber_position": 0.45, "strategic_note": "Оператор НИС (накопительно-ипотечной системы) исторически завязан на ВТБ и ГПБ. Сбер конкурирует ставкой и скоростью на вторичном/льготном сегменте."}, "potential": {"score": 48.5, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.45, "позиция_Сбера": 0.45, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "ДБО и бюджетные платежи для госорганов", "segment": "госсектор/транзакции", "demand_signal": 2, "competitiveness": {"competitors": ["ВТБ", "Казначейство России (СУФД)", "Газпромбанк"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": "Бюджетные потоки идут через Казначейство (СУФД), банк — только агент. Возможность — эквайринг госпошлин/штрафов и сервисы для граждан-клиентов ведомства."}, "potential": {"score": 41.8, "tier": "LOW — мониторинг", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.1, "позиция_Сбера": 0.6, "масштаб_клиента": 0.5, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}]}, {"holding": "Северо-Западное таможенное управление (ФТС)", "type": "fts", "region": "Санкт-Петербург", "employees": 11000, "publications_count": 2, "signal_breakdown": {"official": 2, "expert": 0, "holiday": 0, "user": 0}, "avg_sentiment": 0.0, "playbook": {"headline": "Эквайринг таможенных пошлин и сборов участников ВЭД", "top_product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "top_score": 70.6, "focus": [{"id": "acquiring_fines", "product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "score": 70.6, "matched": true}, {"id": "gov_dbo", "product": "ДБО и бюджетные платежи для госорганов", "score": 51.1, "matched": true}, {"id": "premium_service", "product": "СберПервый / премиальное обслуживание комсостава", "score": null, "matched": false}, {"id": "consumer_loan", "product": "Потребкредиты и рефинансирование для личного состава", "score": null, "matched": false}], "strengths": ["Приём таможенных пошлин и сборов через эквайринг", "Инструменты для участников ВЭД (гарантии, платежи)", "Премиальное обслуживание руководящего состава"], "angle": "Таможня = высокий объём платежей бизнеса. Заходить через приём пошлин и сборов, плюс розница и премиум для аттестованного состава.", "avoid": "Бюджетные потоки идут через Казначейство — банк только агент."}, "recommendations": [{"product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "segment": "госплатежи", "demand_signal": 18, "competitiveness": {"competitors": ["ГИС ГМП / Госуслуги", "ВТБ", "Тинькофф"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": ""}, "potential": {"score": 70.6, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.9, "позиция_Сбера": 0.9, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "segment": "экосистема/подписка", "demand_signal": 5, "competitiveness": {"competitors": ["Яндекс Плюс", "VK Combo", "Т-Банк (Pro)"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": "Ключевое конкурентное преимущество Сбера: у ВТБ/ГПБ (банков силовиков) НЕТ своей экосистемы. Продаётся не банку, а как корпоративный бенефит личному составу поверх зарплатного проекта — повышает липкость даже там, где довольствие идёт через ВТБ. Мультипликатор удержания клиента."}, "potential": {"score": 63.0, "tier": "MEDIUM — точечное предложение", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.25, "позиция_Сбера": 0.9, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Зарплатный проект бюджетникам (карты «Мир»)", "segment": "HR/массовый", "demand_signal": 19, "competitiveness": {"competitors": ["ВТБ (доминирует у силовиков)", "Газпромбанк", "Почта Банк"], "competition_intensity": 0.75, "sber_position": 0.5, "strategic_note": "У силовиков (МВД, Минобороны, Росгвардия) исторически доминирует ВТБ — денежное довольствие военнослужащих идёт через него по госконтрактам. Сберу нужно заходить точечно: гражданский персонал ведомств, терорганы без централизованного зарплатного контракта, доп. сервисы."}, "potential": {"score": 62.1, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.95, "позиция_Сбера": 0.5, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Самокат / Купер (корпоративная доставка, питание)", "segment": "экосистема/e-com", "demand_signal": 4, "competitiveness": {"competitors": ["Яндекс Лавка/Еда", "Вкусвилл", "Ozon fresh"], "competition_intensity": 0.75, "sber_position": 0.85, "strategic_note": ""}, "potential": {"score": 61.0, "tier": "MEDIUM — точечное предложение", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.2, "позиция_Сбера": 0.85, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "ДБО и бюджетные платежи для госорганов", "segment": "госсектор/транзакции", "demand_signal": 10, "competitiveness": {"competitors": ["ВТБ", "Казначейство России (СУФД)", "Газпромбанк"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": "Бюджетные потоки идут через Казначейство (СУФД), банк — только агент. Возможность — эквайринг госпошлин/штрафов и сервисы для граждан-клиентов ведомства."}, "potential": {"score": 51.1, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.5, "позиция_Сбера": 0.6, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "GigaChat / AI-решения для госсектора", "segment": "ИТ/ИИ", "demand_signal": 3, "competitiveness": {"competitors": ["Яндекс (YandexGPT)", "VK", "Ростелеком"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 45.6, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.15, "позиция_Сбера": 0.8, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Cloud.ru (защищённое / аттестованное облако)", "segment": "ИТ/облако", "demand_signal": 2, "competitiveness": {"competitors": ["Ростелеком (РТК-ЦОД, гос №1)", "Яндекс Облако", "VK Cloud"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": ""}, "potential": {"score": 39.1, "tier": "LOW — мониторинг", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.1, "позиция_Сбера": 0.6, "масштаб_клиента": 0.37, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}]}, {"holding": "УФССП по Северо-Западу", "type": "fssp", "region": "СЗФО", "employees": 9000, "publications_count": 2, "signal_breakdown": {"official": 1, "expert": 0, "holiday": 0, "user": 1}, "avg_sentiment": -0.5, "playbook": {"headline": "Взыскание задолженности и приём платежей граждан", "top_product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "top_score": 68.5, "focus": [{"id": "acquiring_fines", "product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "score": 68.5, "matched": true}, {"id": "gov_dbo", "product": "ДБО и бюджетные платежи для госорганов", "score": 41.5, "matched": true}, {"id": "consumer_loan", "product": "Потребкредиты и рефинансирование для личного состава", "score": 48.0, "matched": true}, {"id": "eco_sberprime", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 60.4, "matched": true}], "strengths": ["Массовый приём платежей по исполнительным производствам", "СБП и онлайн-оплата задолженности должниками", "Розница приставам с невысоким довольствием"], "angle": "Ключевой объём — платежи должников. Удобные каналы оплаты (СБП, QR, онлайн) повышают собираемость. Плюс розница сотрудникам.", "avoid": "Прямой зарплатный контракт — низкий приоритет, малый бюджет ведомства."}, "recommendations": [{"product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "segment": "госплатежи", "demand_signal": 22, "competitiveness": {"competitors": ["ГИС ГМП / Госуслуги", "ВТБ", "Тинькофф"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": ""}, "potential": {"score": 68.5, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.9, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}, {"product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "segment": "экосистема/подписка", "demand_signal": 7, "competitiveness": {"competitors": ["Яндекс Плюс", "VK Combo", "Т-Банк (Pro)"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": "Ключевое конкурентное преимущество Сбера: у ВТБ/ГПБ (банков силовиков) НЕТ своей экосистемы. Продаётся не банку, а как корпоративный бенефит личному составу поверх зарплатного проекта — повышает липкость даже там, где довольствие идёт через ВТБ. Мультипликатор удержания клиента."}, "potential": {"score": 60.4, "tier": "MEDIUM — точечное предложение", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.35, "позиция_Сбера": 0.9, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}, {"product": "Самокат / Купер (корпоративная доставка, питание)", "segment": "экосистема/e-com", "demand_signal": 2, "competitiveness": {"competitors": ["Яндекс Лавка/Еда", "Вкусвилл", "Ozon fresh"], "competition_intensity": 0.75, "sber_position": 0.85, "strategic_note": ""}, "potential": {"score": 56.4, "tier": "MEDIUM — точечное предложение", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.1, "позиция_Сбера": 0.85, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}, {"product": "Потребкредиты и рефинансирование для личного состава", "segment": "розница/кредиты", "demand_signal": 8, "competitiveness": {"competitors": ["ВТБ", "Почта Банк", "Совкомбанк"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 48.0, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.4, "позиция_Сбера": 0.8, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}, {"product": "ДБО и бюджетные платежи для госорганов", "segment": "госсектор/транзакции", "demand_signal": 7, "competitiveness": {"competitors": ["ВТБ", "Казначейство России (СУФД)", "Газпромбанк"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": "Бюджетные потоки идут через Казначейство (СУФД), банк — только агент. Возможность — эквайринг госпошлин/штрафов и сервисы для граждан-клиентов ведомства."}, "potential": {"score": 41.5, "tier": "LOW — мониторинг", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.35, "позиция_Сбера": 0.6, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}, {"product": "СберСтрахование / НПФ / ДМС (соцпакет)", "segment": "соцпакет", "demand_signal": 5, "competitiveness": {"competitors": ["СОГАЗ", "ВСК (страховщик Минобороны)", "Ингосстрах"], "competition_intensity": 0.75, "sber_position": 0.7, "strategic_note": ""}, "potential": {"score": 41.0, "tier": "LOW — мониторинг", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.25, "позиция_Сбера": 0.7, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}, {"product": "Зарплатный проект бюджетникам (карты «Мир»)", "segment": "HR/массовый", "demand_signal": 8, "competitiveness": {"competitors": ["ВТБ (доминирует у силовиков)", "Газпромбанк", "Почта Банк"], "competition_intensity": 0.75, "sber_position": 0.5, "strategic_note": "У силовиков (МВД, Минобороны, Росгвардия) исторически доминирует ВТБ — денежное довольствие военнослужащих идёт через него по госконтрактам. Сберу нужно заходить точечно: гражданский персонал ведомств, терорганы без централизованного зарплатного контракта, доп. сервисы."}, "potential": {"score": 40.5, "tier": "LOW — мониторинг", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.4, "позиция_Сбера": 0.5, "масштаб_клиента": 0.3, "момент_сентимент": 0.25, "конкур_поправка": 0.62}}}]}, {"holding": "Росгвардия по СЗФО (войска + вневедомственная охрана)", "type": "rosgvard", "region": "СЗФО", "employees": 40000, "publications_count": 2, "signal_breakdown": {"official": 1, "expert": 0, "holiday": 1, "user": 0}, "avg_sentiment": 0.0, "playbook": {"headline": "Экосистема как мотивация + розница личному составу", "top_product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "top_score": 91.1, "focus": [{"id": "eco_sberprime", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 91.1, "matched": true}, {"id": "eco_spasibo", "product": "Программа лояльности СберСпасибо", "score": 84.6, "matched": true}, {"id": "consumer_loan", "product": "Потребкредиты и рефинансирование для личного состава", "score": null, "matched": false}, {"id": "eco_zdorovie", "product": "СберЗдоровье (телемедицина, ДМС-сервис для личного состава)", "score": null, "matched": false}], "strengths": ["СберПрайм и Спасибо как поощрение личного состава", "Быстрые потребкредиты и рефинансирование для бойцов", "Доставка Самокат/Купер для подразделений"], "angle": "Крупный штат (~40 тыс. в СЗФО) — большая база подписчиков. Экосистема как HR-инструмент удержания и поощрения к профессиональной дате.", "avoid": "Довольствие частично через ВТБ — не тратить силы на зарплатный якорь."}, "recommendations": [{"product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "segment": "экосистема/подписка", "demand_signal": 17, "competitiveness": {"competitors": ["Яндекс Плюс", "VK Combo", "Т-Банк (Pro)"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": "Ключевое конкурентное преимущество Сбера: у ВТБ/ГПБ (банков силовиков) НЕТ своей экосистемы. Продаётся не банку, а как корпоративный бенефит личному составу поверх зарплатного проекта — повышает липкость даже там, где довольствие идёт через ВТБ. Мультипликатор удержания клиента."}, "potential": {"score": 91.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.85, "позиция_Сбера": 0.9, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Программа лояльности СберСпасибо", "segment": "экосистема/лояльность", "demand_signal": 4, "competitiveness": {"competitors": ["ВТБ Кэшбэк", "Альфа-Кэшбэк", "Яндекс Плюс баллы"], "competition_intensity": 0.75, "sber_position": 0.9, "strategic_note": ""}, "potential": {"score": 84.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.2, "позиция_Сбера": 0.9, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Самокат / Купер (корпоративная доставка, питание)", "segment": "экосистема/e-com", "demand_signal": 4, "competitiveness": {"competitors": ["Яндекс Лавка/Еда", "Вкусвилл", "Ozon fresh"], "competition_intensity": 0.75, "sber_position": 0.85, "strategic_note": ""}, "potential": {"score": 83.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)", "salary_anchor": true, "factors": {"спрос_из_публикаций": 0.2, "позиция_Сбера": 0.85, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Зарплатный проект бюджетникам (карты «Мир»)", "segment": "HR/массовый", "demand_signal": 22, "competitiveness": {"competitors": ["ВТБ (доминирует у силовиков)", "Газпромбанк", "Почта Банк"], "competition_intensity": 0.75, "sber_position": 0.5, "strategic_note": "У силовиков (МВД, Минобороны, Росгвардия) исторически доминирует ВТБ — денежное довольствие военнослужащих идёт через него по госконтрактам. Сберу нужно заходить точечно: гражданский персонал ведомств, терорганы без централизованного зарплатного контракта, доп. сервисы."}, "potential": {"score": 76.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 1.0, "позиция_Сбера": 0.5, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "GigaChat / AI-решения для госсектора", "segment": "ИТ/ИИ", "demand_signal": 9, "competitiveness": {"competitors": ["Яндекс (YandexGPT)", "VK", "Ростелеком"], "competition_intensity": 0.75, "sber_position": 0.8, "strategic_note": ""}, "potential": {"score": 67.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.45, "позиция_Сбера": 0.8, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "СберСтрахование / НПФ / ДМС (соцпакет)", "segment": "соцпакет", "demand_signal": 9, "competitiveness": {"competitors": ["СОГАЗ", "ВСК (страховщик Минобороны)", "Ингосстрах"], "competition_intensity": 0.75, "sber_position": 0.7, "strategic_note": ""}, "potential": {"score": 64.8, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.45, "позиция_Сбера": 0.7, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Военная ипотека / льготная ипотека силовикам", "segment": "розница/ипотека", "demand_signal": 7, "competitiveness": {"competitors": ["ВТБ", "Газпромбанк (оператор НИС)", "Дом.РФ"], "competition_intensity": 0.75, "sber_position": 0.45, "strategic_note": "Оператор НИС (накопительно-ипотечной системы) исторически завязан на ВТБ и ГПБ. Сбер конкурирует ставкой и скоростью на вторичном/льготном сегменте."}, "potential": {"score": 55.5, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.35, "позиция_Сбера": 0.45, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}, {"product": "Cloud.ru (защищённое / аттестованное облако)", "segment": "ИТ/облако", "demand_signal": 2, "competitiveness": {"competitors": ["Ростелеком (РТК-ЦОД, гос №1)", "Яндекс Облако", "VK Cloud"], "competition_intensity": 0.75, "sber_position": 0.6, "strategic_note": ""}, "potential": {"score": 51.8, "tier": "MEDIUM — точечное предложение", "model": "core (прямая продажа)", "salary_anchor": false, "factors": {"спрос_из_публикаций": 0.1, "позиция_Сбера": 0.6, "масштаб_клиента": 1.0, "момент_сентимент": 0.5, "конкур_поправка": 0.62}}}]}], "summary": {"total_opportunities": 50, "top": [{"holding": "ГУ МВД по г. Санкт-Петербургу и Ленобласти", "region": "Санкт-Петербург", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 92.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "Росгвардия по СЗФО (войска + вневедомственная охрана)", "region": "СЗФО", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 91.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "Западный военный округ / ЛенВО (Минобороны)", "region": "Санкт-Петербург", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 86.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "ГУ МВД по г. Санкт-Петербургу и Ленобласти", "region": "Санкт-Петербург", "product": "Эквайринг госпошлин и штрафов (ФССП/ФТС/МВД)", "score": 86.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)"}, {"holding": "Росгвардия по СЗФО (войска + вневедомственная охрана)", "region": "СЗФО", "product": "Программа лояльности СберСпасибо", "score": 84.6, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "ГУ МВД по г. Санкт-Петербургу и Ленобласти", "region": "Санкт-Петербург", "product": "Самокат / Купер (корпоративная доставка, питание)", "score": 83.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "Западный военный округ / ЛенВО (Минобороны)", "region": "Санкт-Петербург", "product": "Самокат / Купер (корпоративная доставка, питание)", "score": 83.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "Росгвардия по СЗФО (войска + вневедомственная охрана)", "region": "СЗФО", "product": "Самокат / Купер (корпоративная доставка, питание)", "score": 83.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "Западный военный округ / ЛенВО (Минобороны)", "region": "Санкт-Петербург", "product": "СберСтрахование / НПФ / ДМС (соцпакет)", "score": 77.5, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)"}, {"holding": "Западный военный округ / ЛенВО (Минобороны)", "region": "Санкт-Петербург", "product": "СберМобайл (корпоративная связь)", "score": 77.5, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "ГУ МВД по г. Санкт-Петербургу и Ленобласти", "region": "Санкт-Петербург", "product": "Зарплатный проект бюджетникам (карты «Мир»)", "score": 76.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)"}, {"holding": "Росгвардия по СЗФО (войска + вневедомственная охрана)", "region": "СЗФО", "product": "Зарплатный проект бюджетникам (карты «Мир»)", "score": 76.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)"}, {"holding": "УФСИН по Санкт-Петербургу и Ленобласти", "region": "Санкт-Петербург", "product": "СберПрайм (единая подписка: кэшбэк, доставка, сервисы)", "score": 75.1, "tier": "HIGH — приоритетная проработка", "model": "eco (соцпакет/бенефит)"}, {"holding": "Западный военный округ / ЛенВО (Минобороны)", "region": "Санкт-Петербург", "product": "Зарплатный проект бюджетникам (карты «Мир»)", "score": 73.8, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)"}, {"holding": "ГУ МВД по г. Санкт-Петербургу и Ленобласти", "region": "Санкт-Петербург", "product": "Потребкредиты и рефинансирование для личного состава", "score": 73.2, "tier": "HIGH — приоритетная проработка", "model": "core (прямая продажа)"}]}}</script>
+
+<header class="sticky">
+  <h1><span class="logo-dot"></span>Силовой периметр СЗФО × Сбер</h1>
+  <div class="meta">v1.1 · 26.08.2026 · <span class="badge demo">демо-модель</span></div>
+</header>
+
+<main>
+
+  <section>
+    <h2>Потенциал розничных и b2g-продуктов Сбера в силовом сегменте <span class="accent">Северо-Западного федерального округа</span></h2>
+    <p class="section-desc">
+      Скоринг 12 ведомств × 15 продуктов = 180 сегментных возможностей. Модель считает потенциал (0–100)
+      на основе публикаций, экспертной позиции Сбера и данных рынка. Всё не оферта — см. методологию.
+      Ключевая ставка ЦБ на дату среза: <b>14,5%</b>.
+    </p>
+    <div class="kpi-strip" id="kpi-strip"></div>
+  </section>
+
+  <section id="matrix-section">
+    <h2>Матрица <span class="accent">ведомство × продукт</span></h2>
+    <p class="section-desc">
+      Наведите на ячейку — появится кнопка «?» с расшифровкой скора.
+      Тира: HIGH ≥ 65 · MEDIUM 45–64 · LOW &lt; 45.
+    </p>
+    <div class="matrix-wrap">
+      <table class="matrix" id="matrix-table"></table>
+    </div>
+    <div class="legend">
+      <span><span class="sw" style="background: rgba(33,160,56,0.35);"></span>HIGH — ставить в проработку</span>
+      <span><span class="sw" style="background: rgba(212,160,23,0.28);"></span>MEDIUM — держать в поле зрения</span>
+      <span><span class="sw" style="background: rgba(74,77,82,0.35);"></span>LOW — фиксируем, не давим</span>
+    </div>
+  </section>
+
+  <section id="agencies-section">
+    <h2>Ведомства — <span class="accent">карточки с тактикой</span></h2>
+    <p class="section-desc">Топ-3 продукта по скору + плейбук по типу ведомства + основные конкуренты в главном сегменте.</p>
+    <div class="agency-grid" id="agency-grid"></div>
+  </section>
+
+  <section id="competitors-section">
+    <h2>Конкурентная матрица <span class="accent">(розница)</span></h2>
+    <p class="section-desc">
+      Актуальные продукты банков-конкурентов Сбера в силовом сегменте.
+      Обновляется еженедельно (пн 09:00 МСК) через GitHub Actions.
+      <span id="competitors-meta" class="competitor-meta"></span>
+    </p>
+    <div class="competitor-filter">
+      <label>Продукт:
+        <select id="competitor-product-filter" onchange="renderCompetitors()">
+          <option value="consumer_loan">Потребкредиты</option>
+          <option value="mil_mortgage">Военная ипотека</option>
+          <option value="premium_service">Премиум-сервис</option>
+        </select>
+      </label>
+    </div>
+    <table class="competitor-table">
+      <thead>
+        <tr>
+          <th style="width: 110px;">Банк</th>
+          <th style="width: 200px;">Продукт</th>
+          <th style="width: 90px;">Ставка, %</th>
+          <th style="width: 100px;">Макс. сумма</th>
+          <th>УТП / слабость</th>
+          <th style="width: 40px;">→</th>
+        </tr>
+      </thead>
+      <tbody id="competitor-tbody"></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <div>
+    Методология: <a href="docs/METHODOLOGY.md">docs/METHODOLOGY.md</a> ·
+    Источники: <a href="sources/registry.yaml">sources/registry.yaml</a> ·
+    Обновление данных: <a href=".github/workflows/refresh-competitors.yml">GitHub Actions</a>
+  </div>
+  <div style="margin-top: 8px;">
+    <b>Демонстрационная модель.</b> Не оферта. Числовые параметры — стартовые экспертные оценки,
+    подлежат калибровке на исторической выборке закрытых сделок.
+    Доли рынка — публичные аппроксимации (Frank RG, Эксперт РА, banki.ru).
+  </div>
+</footer>
+
+<!-- Модалка «Почему такой скор?» -->
+<div class="modal-backdrop" id="scoreModal" onclick="if(event.target.id==='scoreModal') closeScoreModal()">
+  <div class="modal">
+    <button class="close-btn" onclick="closeScoreModal()">×</button>
+    <h3 id="scoreModal-title">Расшифровка скора</h3>
+    <div id="scoreModal-body"></div>
+    <div class="foot">
+      Полная методология: <a href="docs/METHODOLOGY.md">docs/METHODOLOGY.md</a>.
+      Множители: <code>f_demand</code> — сила спроса из публикаций,
+      <code>f_position</code> — позиция Сбера в сегменте,
+      <code>f_size</code> — масштаб клиента,
+      <code>f_sent</code> — сентимент,
+      <code>f_comp</code> — поправка на конкуренцию.
+    </div>
+  </div>
+</div>
+
 <script>
-
-const DATA = JSON.parse(document.getElementById('report-data').textContent);
-const TYPE_LABELS = {"mvd": "МВД", "minoborony": "Минобороны", "fsin": "ФСИН", "fssp": "ФССП", "fts": "ФТС", "rosgvard": "Росгвардия", "mchs": "МЧС", "fsb": "ФСБ", "sledkom": "СК", "prokuratura": "Прокуратура"};
-const reports = DATA.reports;
-
-// --- собираем плоский список возможностей ---
-let ALL = [];
-reports.forEach(r => {
-  r.recommendations.forEach(rec => {
-    ALL.push({
-      holding: r.holding, type: r.type, region: r.region, employees: r.employees,
-      product: rec.product, segment: rec.segment,
-      score: rec.potential.score, tier: rec.potential.tier,
-      model: rec.potential.model, isEco: (rec.potential.model||'').indexOf('eco')>-1,
-      anchor: rec.potential.salary_anchor,
-      position: rec.competitiveness.sber_position,
-      competitors: rec.competitiveness.competitors,
-      note: rec.competitiveness.strategic_note,
-      factors: rec.potential.factors, demand: rec.demand_signal
-    });
-  });
-});
-
-function tierColor(s){ return s>=65?'var(--high)':s>=45?'var(--medium)':'var(--low)'; }
-function tierShort(s){ return s>=65?'HIGH':s>=45?'MED':'LOW'; }
-
-let filterModel = 'all';
-
-function render(){
-  const app = document.getElementById('app');
-  const view = filterModel==='all'?ALL:ALL.filter(o=>filterModel==='eco'?o.isEco:!o.isEco);
-  const sorted = [...view].sort((a,b)=>b.score-a.score);
-
-  const high = ALL.filter(o=>o.score>=65).length;
-  const ecoN = ALL.filter(o=>o.isEco).length;
-  const avg = (ALL.reduce((s,o)=>s+o.score,0)/ALL.length).toFixed(1);
-
-  let h = '';
-  // KPI
-  h += '<div class="kpis">'
-    + kpi(reports.length,'ведомств в периметре')
-    + kpi(ALL.length,'выявленных возможностей')
-    + kpi(high,'приоритетных (HIGH)')
-    + kpi(avg,'средний скоринг')
-    + '</div>';
-
-  // disclaimer
-  h += '<div class="disclaimer">⚠ Оценки рассчитаны демонстрационной моделью на основе '
-    + 'публикаций прессы и экспертной калибровки позиций. Не являются офертой, '
-    + 'не содержат персональных данных и не заменяют коммерческую проработку.</div>';
-
-  // filters
-  h += '<div class="filters">'
-    + fbtn('all','Все продукты')
-    + fbtn('core','Классические (CORE)')
-    + fbtn('eco','Экосистема (ECO)')
-    + '</div>';
-
-  // TOP chart
-  h += '<h2>Топ-возможности продаж</h2><div class="panel">';
-  sorted.slice(0,15).forEach(o=>{
-    const w = o.score;
-    h += '<div class="bar-row">'
-      + '<span class="tag '+(o.isEco?'eco':'core')+'">'+(o.isEco?'ECO':'CORE')+'</span>'
-      + '<span class="name" title="'+esc(o.product)+' → '+esc(o.holding)+'">'
-        + esc(shorten(o.product,38))+' → '+esc(TYPE_LABELS[o.type]||o.type)+'</span>'
-      + '<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+tierColor(o.score)+'">'
-        + o.score+'</div></div></div>';
-  });
-  h += '</div>';
-
-  // MATRIX
-  h += '<h2>Матрица «ведомство × продукт»</h2><div class="panel" style="overflow-x:auto">';
-  h += buildMatrix(view);
-  h += '</div>';
-
-  // DEPT CARDS
-  h += '<h2>Разбор по ведомствам</h2>';
-  reports.forEach(r=>{
-    const recs = r.recommendations.filter(rec=>{
-      if(filterModel==='all') return true;
-      const e=(rec.potential.model||'').indexOf('eco')>-1;
-      return filterModel==='eco'?e:!e;
-    });
-    if(!recs.length) return;
-    h += deptCard(r, recs);
-  });
-
-  app.innerHTML = h;
-  document.querySelectorAll('.filters button').forEach(b=>{
-    b.onclick=()=>{ filterModel=b.dataset.m; render(); };
-  });
-}
-
-function kpi(v,l){ return '<div class="kpi"><div class="val">'+v+'</div><div class="lbl">'+l+'</div></div>'; }
-function fbtn(m,l){ return '<button data-m="'+m+'" class="'+(filterModel===m?'active':'')+'">'+l+'</button>'; }
-function esc(s){ return (s+'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
-function shorten(s,n){ return s.length>n?s.slice(0,n-1)+'…':s; }
-
-function buildMatrix(view){
-  const depts=[...new Set(view.map(o=>o.holding))];
-  const prods=[...new Set(view.map(o=>o.product))];
-  const map={};
-  view.forEach(o=>{ map[o.holding+'|'+o.product]=o; });
-  let t='<table><thead><tr><th>Продукт</th>';
-  depts.forEach(d=>{ t+='<th title="'+esc(d)+'">'+esc(TYPE_LABELS[view.find(o=>o.holding===d).type]||d)+'</th>'; });
-  t+='</tr></thead><tbody>';
-  prods.forEach(p=>{
-    t+='<tr><td>'+esc(shorten(p,34))+'</td>';
-    depts.forEach(d=>{
-      const o=map[d+'|'+p];
-      if(o) t+='<td><span class="cell" style="background:'+tierColor(o.score)+'" title="'+tierShort(o.score)+'">'+o.score+'</span></td>';
-      else t+='<td style="color:var(--line)">·</td>';
-    });
-    t+='</tr>';
-  });
-  return t+'</tbody></table>';
-}
-
-function pbCard(pb){
-  var focus = pb.focus.map(function(f){
-    return '<span class="pb-chip'+(f.matched?' on':'')+'">'+esc(shorten(f.product,26))
-      + (f.score!=null?'<span class="sc">'+f.score+'</span>':'')+'</span>';
-  }).join('');
-  var strengths = pb.strengths.map(function(s){return '<li>'+esc(s)+'</li>';}).join('');
-  var topLine = '\u041f\u0440\u0438\u043e\u0440\u0438\u0442\u0435\u0442: <b>'+esc(shorten(pb.top_product,40))+'</b>'
-    + (pb.top_score!=null?' \u2014 \u0441\u043a\u043e\u0440\u0438\u043d\u0433 '+pb.top_score:'');
-  return '<div class="pb">'
-    + '<div class="pb-lbl">\u2605 \u0421\u0430\u043c\u043e\u0435 \u0432\u043e\u0441\u0442\u0440\u0435\u0431\u043e\u0432\u0430\u043d\u043d\u043e\u0435 \u0434\u043b\u044f \u0432\u0435\u0434\u043e\u043c\u0441\u0442\u0432\u0430</div>'
-    + '<div class="pb-head">'+esc(pb.headline)+'</div>'
-    + '<div class="pb-top">'+topLine+'</div>'
-    + '<div class="pb-focus">'+focus+'</div>'
-    + '<div class="pb-grid">'
-      + '<div class="pb-block"><div class="t">\u041d\u0430 \u0447\u0442\u043e \u0434\u0435\u043b\u0430\u0442\u044c \u0430\u043a\u0446\u0435\u043d\u0442</div><ul>'+strengths+'</ul></div>'
-      + '<div class="pb-block"><div class="t">\u0422\u0430\u043a\u0442\u0438\u043a\u0430 \u0437\u0430\u0445\u043e\u0434\u0430</div>'
-        + '<div class="pb-angle">'+esc(pb.angle)+'</div>'
-        + (pb.avoid?'<div class="pb-avoid">\u26a0 '+esc(pb.avoid)+'</div>':'')
-      + '</div>'
-    + '</div></div>';
-}
-
-function deptCard(r, recs){
-  const sb=r.signal_breakdown;
-  let h='<div class="dept-card"><div class="dept-head"><div>'
-    + '<h3>'+esc(r.holding)+'</h3>'
-    + '<div class="dept-meta">'+esc(TYPE_LABELS[r.type]||r.type)+' · '+esc(r.region)
-      + ' · штат ~'+r.employees.toLocaleString('ru')+' · сентимент '+(r.avg_sentiment>=0?'+':'')+r.avg_sentiment+'</div>'
-    + '</div><div class="chips">'
-      + '<span class="chip">офиц.: '+sb.official+'</span>'
-      + '<span class="chip">эксперт: '+sb.expert+'</span>'
-      + '<span class="chip">праздн.: '+sb.holiday+'</span>'
-      + '<span class="chip">юзеры: '+sb.user+'</span>'
-    + '</div></div>';
-  if(r.playbook) h += pbCard(r.playbook);
-  [...recs].sort((a,b)=>b.potential.score-a.potential.score).slice(0,5).forEach(rec=>{
-    const p=rec.potential, c=rec.competitiveness, eco=(p.model||'').indexOf('eco')>-1;
-    h+='<div class="rec"><div class="rec-top">'
-      + '<span class="pname">'+esc(rec.product)+'</span>'
-      + '<span class="cell" style="background:'+tierColor(p.score)+'">'+p.score+'</span></div>'
-      + '<div class="rec-sub"><span class="tag '+(eco?'eco':'core')+'">'+(eco?'ECO':'CORE')+'</span> '
-        + esc(p.tier)+' · сегмент: '+esc(rec.segment)+' · позиция Сбера: '+c.sber_position+'</div>'
-      + '<div class="comp">Конкуренты: '+esc(c.competitors.join(', '))+'</div>'
-      + '<div class="factors">'
-        + fac('спрос',p.factors['спрос_из_публикаций'])
-        + fac('позиция',p.factors['позиция_Сбера'])
-        + fac('масштаб',p.factors['масштаб_клиента'])
-        + fac('сентимент',p.factors['момент_сентимент'])
-        + fac('конкур.',p.factors['конкур_поправка'])
-      + '</div>';
-    if(c.strategic_note) h+='<div class="note">⚑ '+esc(c.strategic_note)+'</div>';
-    h+='</div>';
-  });
-  return h+'</div>';
-}
-function fac(l,v){ return '<span>'+l+': <b>'+v+'</b></span>'; }
-
-render();
-
+// ============================================================================
+// ДАННЫЕ (инлайн — self-contained, работает по file://)
+// ============================================================================
 </script>
+<script>
+const DATA = {"meta":{"version":"1.1","generated_at":"2026-08-25","disclaimer":"Демонстрационная модель. Не оферта. Все параметры подлежат калибровке.","methodology_url":"docs/METHODOLOGY.md","key_rate_ref":14.5},"agencies":[{"id":"mvd_spb","name":"ГУ МВД по СПб и Ленобласти","short":"МВД СПб/ЛО","staff":42000,"type":"mvd","region":"СПб + Ленобласть","scores":{"salary_budget":{"score":46.8,"tier":"MEDIUM","f_demand":0.25,"f_position":0.3,"f_size":1.0,"f_sent":0.43,"f_comp":0.531,"demand_signal":5,"avg_sentiment":-0.14,"evidence_count":5,"sentiment_sample":5},"mil_mortgage":{"score":48.9,"tier":"MEDIUM","f_demand":0.25,"f_position":0.35,"f_size":1.0,"f_sent":0.47,"f_comp":0.562,"demand_signal":5,"avg_sentiment":-0.06,"evidence_count":5,"sentiment_sample":5},"consumer_loan":{"score":78.7,"tier":"HIGH","f_demand":0.9,"f_position":0.65,"f_size":1.0,"f_sent":0.595,"f_comp":0.656,"demand_signal":18,"avg_sentiment":0.19,"evidence_count":18,"sentiment_sample":18},"npf_insurance":{"score":54.5,"tier":"MEDIUM","f_demand":0.25,"f_position":0.55,"f_size":1.0,"f_sent":0.425,"f_comp":0.688,"demand_signal":5,"avg_sentiment":-0.15,"evidence_count":5,"sentiment_sample":5},"premium_service":{"score":63.0,"tier":"MEDIUM","f_demand":0.35,"f_position":0.6,"f_size":1.0,"f_sent":0.73,"f_comp":0.656,"demand_signal":7,"avg_sentiment":0.46,"evidence_count":7,"sentiment_sample":7},"gov_dbo":{"score":50.8,"tier":"MEDIUM","f_demand":0.0,"f_position":0.6,"f_size":1.0,"f_sent":0.55,"f_comp":0.75,"demand_signal":0,"avg_sentiment":0.1,"evidence_count":0,"sentiment_sample":5},"acquiring_fines":{"score":80.6,"tier":"HIGH","f_demand":0.7,"f_position":0.9,"f_size":1.0,"f_sent":0.555,"f_comp":0.875,"demand_signal":14,"avg_sentiment":0.11,"evidence_count":14,"sentiment_sample":14},"gigachat_ai":{"score":72.2,"tier":"HIGH","f_demand":0.6,"f_position":0.8,"f_size":1.0,"f_sent":0.425,"f_comp":0.781,"demand_signal":12,"avg_sentiment":-0.15,"evidence_count":12,"sentiment_sample":12},"cloud":{"score":46.6,"tier":"MEDIUM","f_demand":0.05,"f_position":0.45,"f_size":1.0,"f_sent":0.525,"f_comp":0.594,"demand_signal":1,"avg_sentiment":0.05,"evidence_count":1,"sentiment_sample":5},"cybersec":{"score":52.8,"tier":"MEDIUM","f_demand":0.0,"f_position":0.7,"f_size":1.0,"f_sent":0.54,"f_comp":0.719,"demand_signal":0,"avg_sentiment":0.08,"evidence_count":0,"sentiment_sample":5},"eco_sberprime":{"score":75.2,"tier":"HIGH","f_demand":0.75,"f_position":0.85,"f_size":1.0,"f_sent":0.695,"f_comp":0.75,"demand_signal":15,"avg_sentiment":0.39,"evidence_count":15,"sentiment_sample":15,"anchor":0.0},"eco_spasibo":{"score":71.1,"tier":"HIGH","f_demand":0.25,"f_position":0.9,"f_size":1.0,"f_sent":0.535,"f_comp":0.781,"demand_signal":5,"avg_sentiment":0.07,"evidence_count":5,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":65.3,"tier":"HIGH","f_demand":0.05,"f_position":0.8,"f_size":1.0,"f_sent":0.51,"f_comp":0.656,"demand_signal":1,"avg_sentiment":0.02,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":65.2,"tier":"HIGH","f_demand":0.1,"f_position":0.75,"f_size":1.0,"f_sent":0.6,"f_comp":0.75,"demand_signal":2,"avg_sentiment":0.2,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":62.1,"tier":"MEDIUM","f_demand":0.0,"f_position":0.7,"f_size":1.0,"f_sent":0.59,"f_comp":0.625,"demand_signal":0,"avg_sentiment":0.18,"evidence_count":0,"sentiment_sample":5,"anchor":0.0}}},{"id":"mvd_karelia","name":"МВД по Республике Карелия","short":"МВД Карелия","staff":8000,"type":"mvd","region":"Карелия","scores":{"salary_budget":{"score":28.3,"tier":"LOW","f_demand":0.05,"f_position":0.3,"f_size":0.267,"f_sent":0.575,"f_comp":0.531,"demand_signal":1,"avg_sentiment":0.15,"evidence_count":1,"sentiment_sample":5},"mil_mortgage":{"score":29.8,"tier":"LOW","f_demand":0.1,"f_position":0.35,"f_size":0.267,"f_sent":0.47,"f_comp":0.562,"demand_signal":2,"avg_sentiment":-0.06,"evidence_count":2,"sentiment_sample":5},"consumer_loan":{"score":50.6,"tier":"MEDIUM","f_demand":0.45,"f_position":0.65,"f_size":0.267,"f_sent":0.595,"f_comp":0.656,"demand_signal":9,"avg_sentiment":0.19,"evidence_count":9,"sentiment_sample":9},"npf_insurance":{"score":35.3,"tier":"LOW","f_demand":0.1,"f_position":0.55,"f_size":0.267,"f_sent":0.425,"f_comp":0.688,"demand_signal":2,"avg_sentiment":-0.15,"evidence_count":2,"sentiment_sample":5},"premium_service":{"score":42.9,"tier":"LOW","f_demand":0.25,"f_position":0.6,"f_size":0.267,"f_sent":0.57,"f_comp":0.656,"demand_signal":5,"avg_sentiment":0.14,"evidence_count":5,"sentiment_sample":5},"gov_dbo":{"score":39.1,"tier":"LOW","f_demand":0.1,"f_position":0.6,"f_size":0.267,"f_sent":0.55,"f_comp":0.75,"demand_signal":2,"avg_sentiment":0.1,"evidence_count":2,"sentiment_sample":5},"acquiring_fines":{"score":50.0,"tier":"MEDIUM","f_demand":0.1,"f_position":0.9,"f_size":0.267,"f_sent":0.695,"f_comp":0.875,"demand_signal":2,"avg_sentiment":0.39,"evidence_count":2,"sentiment_sample":5},"gigachat_ai":{"score":45.6,"tier":"MEDIUM","f_demand":0.2,"f_position":0.8,"f_size":0.267,"f_sent":0.43,"f_comp":0.781,"demand_signal":4,"avg_sentiment":-0.14,"evidence_count":4,"sentiment_sample":5},"cloud":{"score":33.3,"tier":"LOW","f_demand":0.15,"f_position":0.45,"f_size":0.267,"f_sent":0.42,"f_comp":0.594,"demand_signal":3,"avg_sentiment":-0.16,"evidence_count":3,"sentiment_sample":5},"cybersec":{"score":42.1,"tier":"LOW","f_demand":0.1,"f_position":0.7,"f_size":0.267,"f_sent":0.605,"f_comp":0.719,"demand_signal":2,"avg_sentiment":0.21,"evidence_count":2,"sentiment_sample":5},"eco_sberprime":{"score":45.2,"tier":"MEDIUM","f_demand":0.3,"f_position":0.85,"f_size":0.267,"f_sent":0.725,"f_comp":0.75,"demand_signal":6,"avg_sentiment":0.45,"evidence_count":6,"sentiment_sample":6,"anchor":0.0},"eco_spasibo":{"score":44.0,"tier":"LOW","f_demand":0.1,"f_position":0.9,"f_size":0.267,"f_sent":0.545,"f_comp":0.781,"demand_signal":2,"avg_sentiment":0.09,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":41.2,"tier":"LOW","f_demand":0.25,"f_position":0.8,"f_size":0.267,"f_sent":0.415,"f_comp":0.656,"demand_signal":5,"avg_sentiment":-0.17,"evidence_count":5,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":40.4,"tier":"LOW","f_demand":0.25,"f_position":0.75,"f_size":0.267,"f_sent":0.455,"f_comp":0.75,"demand_signal":5,"avg_sentiment":-0.09,"evidence_count":5,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":37.7,"tier":"LOW","f_demand":0.1,"f_position":0.7,"f_size":0.267,"f_sent":0.645,"f_comp":0.625,"demand_signal":2,"avg_sentiment":0.29,"evidence_count":2,"sentiment_sample":5,"anchor":0.0}}},{"id":"mvd_murmansk","name":"УМВД по Мурманской области","short":"МВД Мурманск","staff":6500,"type":"mvd","region":"Мурманская обл.","scores":{"salary_budget":{"score":27.9,"tier":"LOW","f_demand":0.05,"f_position":0.3,"f_size":0.217,"f_sent":0.615,"f_comp":0.531,"demand_signal":1,"avg_sentiment":0.23,"evidence_count":1,"sentiment_sample":5},"mil_mortgage":{"score":30.3,"tier":"LOW","f_demand":0.15,"f_position":0.35,"f_size":0.217,"f_sent":0.47,"f_comp":0.562,"demand_signal":3,"avg_sentiment":-0.06,"evidence_count":3,"sentiment_sample":5},"consumer_loan":{"score":48.4,"tier":"MEDIUM","f_demand":0.35,"f_position":0.65,"f_size":0.217,"f_sent":0.715,"f_comp":0.656,"demand_signal":7,"avg_sentiment":0.43,"evidence_count":7,"sentiment_sample":7},"npf_insurance":{"score":33.9,"tier":"LOW","f_demand":0.05,"f_position":0.55,"f_size":0.217,"f_sent":0.495,"f_comp":0.688,"demand_signal":1,"avg_sentiment":-0.01,"evidence_count":1,"sentiment_sample":5},"premium_service":{"score":40.7,"tier":"LOW","f_demand":0.15,"f_position":0.6,"f_size":0.217,"f_sent":0.685,"f_comp":0.656,"demand_signal":3,"avg_sentiment":0.37,"evidence_count":3,"sentiment_sample":5},"gov_dbo":{"score":43.9,"tier":"LOW","f_demand":0.25,"f_position":0.6,"f_size":0.217,"f_sent":0.635,"f_comp":0.75,"demand_signal":5,"avg_sentiment":0.27,"evidence_count":5,"sentiment_sample":5},"acquiring_fines":{"score":54.6,"tier":"MEDIUM","f_demand":0.35,"f_position":0.9,"f_size":0.217,"f_sent":0.565,"f_comp":0.875,"demand_signal":7,"avg_sentiment":0.13,"evidence_count":7,"sentiment_sample":7},"gigachat_ai":{"score":46.3,"tier":"MEDIUM","f_demand":0.25,"f_position":0.8,"f_size":0.217,"f_sent":0.445,"f_comp":0.781,"demand_signal":5,"avg_sentiment":-0.11,"evidence_count":5,"sentiment_sample":5},"cloud":{"score":35.9,"tier":"LOW","f_demand":0.25,"f_position":0.45,"f_size":0.217,"f_sent":0.46,"f_comp":0.594,"demand_signal":5,"avg_sentiment":-0.08,"evidence_count":5,"sentiment_sample":5},"cybersec":{"score":40.9,"tier":"LOW","f_demand":0.15,"f_position":0.7,"f_size":0.217,"f_sent":0.495,"f_comp":0.719,"demand_signal":3,"avg_sentiment":-0.01,"evidence_count":3,"sentiment_sample":5},"eco_sberprime":{"score":43.8,"tier":"LOW","f_demand":0.35,"f_position":0.85,"f_size":0.217,"f_sent":0.69,"f_comp":0.75,"demand_signal":7,"avg_sentiment":0.38,"evidence_count":7,"sentiment_sample":7,"anchor":0.0},"eco_spasibo":{"score":41.8,"tier":"LOW","f_demand":0.05,"f_position":0.9,"f_size":0.217,"f_sent":0.57,"f_comp":0.781,"demand_signal":1,"avg_sentiment":0.14,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":37.1,"tier":"LOW","f_demand":0.0,"f_position":0.8,"f_size":0.217,"f_sent":0.455,"f_comp":0.656,"demand_signal":0,"avg_sentiment":-0.09,"evidence_count":0,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":41.4,"tier":"LOW","f_demand":0.55,"f_position":0.75,"f_size":0.217,"f_sent":0.41,"f_comp":0.75,"demand_signal":11,"avg_sentiment":-0.18,"evidence_count":11,"sentiment_sample":11,"anchor":0.0},"eco_mobile":{"score":35.2,"tier":"LOW","f_demand":0.1,"f_position":0.7,"f_size":0.217,"f_sent":0.5,"f_comp":0.625,"demand_signal":2,"avg_sentiment":0.0,"evidence_count":2,"sentiment_sample":5,"anchor":0.0}}},{"id":"lvo","name":"Ленинградский военный округ","short":"ЛВО","staff":180000,"type":"minoborony","region":"СЗФО","scores":{"salary_budget":{"score":37.1,"tier":"LOW","f_demand":0.0,"f_position":0.2,"f_size":1.0,"f_sent":0.455,"f_comp":0.531,"demand_signal":0,"avg_sentiment":-0.09,"evidence_count":0,"sentiment_sample":5},"mil_mortgage":{"score":67.0,"tier":"HIGH","f_demand":0.8,"f_position":0.25,"f_size":1.0,"f_sent":0.74,"f_comp":0.562,"demand_signal":16,"avg_sentiment":0.48,"evidence_count":16,"sentiment_sample":16},"consumer_loan":{"score":74.7,"tier":"HIGH","f_demand":0.7,"f_position":0.65,"f_size":1.0,"f_sent":0.725,"f_comp":0.656,"demand_signal":14,"avg_sentiment":0.45,"evidence_count":14,"sentiment_sample":14},"npf_insurance":{"score":46.7,"tier":"MEDIUM","f_demand":0.1,"f_position":0.4,"f_size":1.0,"f_sent":0.455,"f_comp":0.688,"demand_signal":2,"avg_sentiment":-0.09,"evidence_count":2,"sentiment_sample":5},"premium_service":{"score":53.6,"tier":"MEDIUM","f_demand":0.15,"f_position":0.6,"f_size":1.0,"f_sent":0.5,"f_comp":0.656,"demand_signal":3,"avg_sentiment":-0.0,"evidence_count":3,"sentiment_sample":5},"gov_dbo":{"score":57.7,"tier":"MEDIUM","f_demand":0.25,"f_position":0.6,"f_size":1.0,"f_sent":0.515,"f_comp":0.75,"demand_signal":5,"avg_sentiment":0.03,"evidence_count":5,"sentiment_sample":5},"acquiring_fines":{"score":58.3,"tier":"MEDIUM","f_demand":0.1,"f_position":0.8,"f_size":1.0,"f_sent":0.435,"f_comp":0.875,"demand_signal":2,"avg_sentiment":-0.13,"evidence_count":2,"sentiment_sample":5},"gigachat_ai":{"score":63.4,"tier":"MEDIUM","f_demand":0.25,"f_position":0.8,"f_size":1.0,"f_sent":0.54,"f_comp":0.781,"demand_signal":5,"avg_sentiment":0.08,"evidence_count":5,"sentiment_sample":5},"cloud":{"score":49.0,"tier":"MEDIUM","f_demand":0.1,"f_position":0.45,"f_size":1.0,"f_sent":0.585,"f_comp":0.594,"demand_signal":2,"avg_sentiment":0.17,"evidence_count":2,"sentiment_sample":5},"cybersec":{"score":73.7,"tier":"HIGH","f_demand":0.65,"f_position":0.7,"f_size":1.0,"f_sent":0.635,"f_comp":0.719,"demand_signal":13,"avg_sentiment":0.27,"evidence_count":13,"sentiment_sample":13},"eco_sberprime":{"score":68.8,"tier":"HIGH","f_demand":0.2,"f_position":0.85,"f_size":1.0,"f_sent":0.5,"f_comp":0.75,"demand_signal":4,"avg_sentiment":-0.0,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":69.7,"tier":"HIGH","f_demand":0.05,"f_position":0.9,"f_size":1.0,"f_sent":0.65,"f_comp":0.781,"demand_signal":1,"avg_sentiment":0.3,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":65.4,"tier":"HIGH","f_demand":0.05,"f_position":0.8,"f_size":1.0,"f_sent":0.525,"f_comp":0.656,"demand_signal":1,"avg_sentiment":0.05,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":67.2,"tier":"HIGH","f_demand":0.1,"f_position":0.8,"f_size":1.0,"f_sent":0.7,"f_comp":0.75,"demand_signal":2,"avg_sentiment":0.4,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":61.3,"tier":"MEDIUM","f_demand":0.0,"f_position":0.7,"f_size":1.0,"f_sent":0.44,"f_comp":0.625,"demand_signal":0,"avg_sentiment":-0.12,"evidence_count":0,"sentiment_sample":5,"anchor":0.0}}},{"id":"vmf","name":"ВМФ (Северный + Балтийский флоты)","short":"ВМФ (СФ+БФ)","staff":90000,"type":"minoborony","region":"Мурманск, Калининград, СПб","scores":{"salary_budget":{"score":40.8,"tier":"LOW","f_demand":0.05,"f_position":0.2,"f_size":1.0,"f_sent":0.6,"f_comp":0.531,"demand_signal":1,"avg_sentiment":0.2,"evidence_count":1,"sentiment_sample":5},"mil_mortgage":{"score":63.9,"tier":"MEDIUM","f_demand":0.75,"f_position":0.25,"f_size":1.0,"f_sent":0.635,"f_comp":0.562,"demand_signal":15,"avg_sentiment":0.27,"evidence_count":15,"sentiment_sample":15},"consumer_loan":{"score":69.3,"tier":"HIGH","f_demand":0.6,"f_position":0.65,"f_size":1.0,"f_sent":0.565,"f_comp":0.656,"demand_signal":12,"avg_sentiment":0.13,"evidence_count":12,"sentiment_sample":12},"npf_insurance":{"score":49.6,"tier":"MEDIUM","f_demand":0.15,"f_position":0.4,"f_size":1.0,"f_sent":0.55,"f_comp":0.688,"demand_signal":3,"avg_sentiment":0.1,"evidence_count":3,"sentiment_sample":5},"premium_service":{"score":54.0,"tier":"MEDIUM","f_demand":0.15,"f_position":0.6,"f_size":1.0,"f_sent":0.53,"f_comp":0.656,"demand_signal":3,"avg_sentiment":0.06,"evidence_count":3,"sentiment_sample":5},"gov_dbo":{"score":57.7,"tier":"MEDIUM","f_demand":0.2,"f_position":0.6,"f_size":1.0,"f_sent":0.615,"f_comp":0.75,"demand_signal":4,"avg_sentiment":0.23,"evidence_count":4,"sentiment_sample":5},"acquiring_fines":{"score":57.3,"tier":"MEDIUM","f_demand":0.0,"f_position":0.8,"f_size":1.0,"f_sent":0.57,"f_comp":0.875,"demand_signal":0,"avg_sentiment":0.14,"evidence_count":0,"sentiment_sample":5},"gigachat_ai":{"score":56.4,"tier":"MEDIUM","f_demand":0.0,"f_position":0.8,"f_size":1.0,"f_sent":0.57,"f_comp":0.781,"demand_signal":0,"avg_sentiment":0.14,"evidence_count":0,"sentiment_sample":5},"cloud":{"score":52.0,"tier":"MEDIUM","f_demand":0.2,"f_position":0.45,"f_size":1.0,"f_sent":0.59,"f_comp":0.594,"demand_signal":4,"avg_sentiment":0.18,"evidence_count":4,"sentiment_sample":5},"cybersec":{"score":64.5,"tier":"MEDIUM","f_demand":0.35,"f_position":0.7,"f_size":1.0,"f_sent":0.62,"f_comp":0.719,"demand_signal":7,"avg_sentiment":0.24,"evidence_count":7,"sentiment_sample":7},"eco_sberprime":{"score":67.8,"tier":"HIGH","f_demand":0.1,"f_position":0.85,"f_size":1.0,"f_sent":0.51,"f_comp":0.75,"demand_signal":2,"avg_sentiment":0.02,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":69.4,"tier":"HIGH","f_demand":0.15,"f_position":0.9,"f_size":1.0,"f_sent":0.4,"f_comp":0.781,"demand_signal":3,"avg_sentiment":-0.2,"evidence_count":3,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":67.9,"tier":"HIGH","f_demand":0.25,"f_position":0.8,"f_size":1.0,"f_sent":0.62,"f_comp":0.656,"demand_signal":5,"avg_sentiment":0.24,"evidence_count":5,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":72.8,"tier":"HIGH","f_demand":0.7,"f_position":0.8,"f_size":1.0,"f_sent":0.605,"f_comp":0.75,"demand_signal":14,"avg_sentiment":0.21,"evidence_count":14,"sentiment_sample":14,"anchor":0.0},"eco_mobile":{"score":64.1,"tier":"MEDIUM","f_demand":0.2,"f_position":0.7,"f_size":1.0,"f_sent":0.59,"f_comp":0.625,"demand_signal":4,"avg_sentiment":0.18,"evidence_count":4,"sentiment_sample":5,"anchor":0.0}}},{"id":"rosgvard_nw","name":"Росгвардия по СЗФО","short":"Росгвардия СЗФО","staff":40000,"type":"rosgvard","region":"СЗФО","scores":{"salary_budget":{"score":56.1,"tier":"MEDIUM","f_demand":0.45,"f_position":0.3,"f_size":1.0,"f_sent":0.65,"f_comp":0.531,"demand_signal":9,"avg_sentiment":0.3,"evidence_count":9,"sentiment_sample":9},"mil_mortgage":{"score":43.7,"tier":"LOW","f_demand":0.0,"f_position":0.35,"f_size":1.0,"f_sent":0.62,"f_comp":0.562,"demand_signal":0,"avg_sentiment":0.24,"evidence_count":0,"sentiment_sample":5},"consumer_loan":{"score":77.5,"tier":"HIGH","f_demand":0.85,"f_position":0.65,"f_size":1.0,"f_sent":0.61,"f_comp":0.656,"demand_signal":17,"avg_sentiment":0.22,"evidence_count":17,"sentiment_sample":17},"npf_insurance":{"score":56.0,"tier":"MEDIUM","f_demand":0.25,"f_position":0.55,"f_size":1.0,"f_sent":0.525,"f_comp":0.688,"demand_signal":5,"avg_sentiment":0.05,"evidence_count":5,"sentiment_sample":5},"premium_service":{"score":54.8,"tier":"MEDIUM","f_demand":0.15,"f_position":0.6,"f_size":1.0,"f_sent":0.58,"f_comp":0.656,"demand_signal":3,"avg_sentiment":0.16,"evidence_count":3,"sentiment_sample":5},"gov_dbo":{"score":52.0,"tier":"MEDIUM","f_demand":0.05,"f_position":0.6,"f_size":1.0,"f_sent":0.535,"f_comp":0.75,"demand_signal":1,"avg_sentiment":0.07,"evidence_count":1,"sentiment_sample":5},"acquiring_fines":{"score":64.2,"tier":"MEDIUM","f_demand":0.2,"f_position":0.8,"f_size":1.0,"f_sent":0.63,"f_comp":0.875,"demand_signal":4,"avg_sentiment":0.26,"evidence_count":4,"sentiment_sample":5},"gigachat_ai":{"score":61.0,"tier":"MEDIUM","f_demand":0.2,"f_position":0.8,"f_size":1.0,"f_sent":0.48,"f_comp":0.781,"demand_signal":4,"avg_sentiment":-0.04,"evidence_count":4,"sentiment_sample":5},"cloud":{"score":43.6,"tier":"LOW","f_demand":0.0,"f_position":0.45,"f_size":1.0,"f_sent":0.43,"f_comp":0.594,"demand_signal":0,"avg_sentiment":-0.14,"evidence_count":0,"sentiment_sample":5},"cybersec":{"score":57.0,"tier":"MEDIUM","f_demand":0.1,"f_position":0.7,"f_size":1.0,"f_sent":0.62,"f_comp":0.719,"demand_signal":2,"avg_sentiment":0.24,"evidence_count":2,"sentiment_sample":5},"eco_sberprime":{"score":88.3,"tier":"HIGH","f_demand":0.55,"f_position":0.85,"f_size":1.0,"f_sent":0.715,"f_comp":0.75,"demand_signal":11,"avg_sentiment":0.43,"evidence_count":11,"sentiment_sample":11,"anchor":0.15},"eco_spasibo":{"score":84.2,"tier":"HIGH","f_demand":0.1,"f_position":0.9,"f_size":1.0,"f_sent":0.46,"f_comp":0.781,"demand_signal":2,"avg_sentiment":-0.08,"evidence_count":2,"sentiment_sample":5,"anchor":0.15},"eco_samokat":{"score":80.9,"tier":"HIGH","f_demand":0.05,"f_position":0.8,"f_size":1.0,"f_sent":0.62,"f_comp":0.656,"demand_signal":1,"avg_sentiment":0.24,"evidence_count":1,"sentiment_sample":5,"anchor":0.15},"eco_zdorovie":{"score":78.3,"tier":"HIGH","f_demand":0.0,"f_position":0.75,"f_size":1.0,"f_sent":0.42,"f_comp":0.75,"demand_signal":0,"avg_sentiment":-0.16,"evidence_count":0,"sentiment_sample":5,"anchor":0.15},"eco_mobile":{"score":78.6,"tier":"HIGH","f_demand":0.15,"f_position":0.7,"f_size":1.0,"f_sent":0.605,"f_comp":0.625,"demand_signal":3,"avg_sentiment":0.21,"evidence_count":3,"sentiment_sample":5,"anchor":0.15}}},{"id":"mchs_nw","name":"ГУ МЧС России по СЗФО","short":"МЧС СЗФО","staff":35000,"type":"mchs","region":"СЗФО","scores":{"salary_budget":{"score":47.7,"tier":"MEDIUM","f_demand":0.2,"f_position":0.3,"f_size":1.0,"f_sent":0.59,"f_comp":0.531,"demand_signal":4,"avg_sentiment":0.18,"evidence_count":4,"sentiment_sample":5},"mil_mortgage":{"score":44.4,"tier":"LOW","f_demand":0.05,"f_position":0.35,"f_size":1.0,"f_sent":0.565,"f_comp":0.562,"demand_signal":1,"avg_sentiment":0.13,"evidence_count":1,"sentiment_sample":5},"consumer_loan":{"score":68.9,"tier":"HIGH","f_demand":0.5,"f_position":0.65,"f_size":1.0,"f_sent":0.74,"f_comp":0.656,"demand_signal":10,"avg_sentiment":0.48,"evidence_count":10,"sentiment_sample":10},"npf_insurance":{"score":49.1,"tier":"MEDIUM","f_demand":0.05,"f_position":0.55,"f_size":1.0,"f_sent":0.465,"f_comp":0.688,"demand_signal":1,"avg_sentiment":-0.07,"evidence_count":1,"sentiment_sample":5},"premium_service":{"score":55.1,"tier":"MEDIUM","f_demand":0.2,"f_position":0.6,"f_size":1.0,"f_sent":0.505,"f_comp":0.656,"demand_signal":4,"avg_sentiment":0.01,"evidence_count":4,"sentiment_sample":5},"gov_dbo":{"score":53.4,"tier":"MEDIUM","f_demand":0.05,"f_position":0.6,"f_size":1.0,"f_sent":0.63,"f_comp":0.75,"demand_signal":1,"avg_sentiment":0.26,"evidence_count":1,"sentiment_sample":5},"acquiring_fines":{"score":64.8,"tier":"MEDIUM","f_demand":0.25,"f_position":0.8,"f_size":1.0,"f_sent":0.57,"f_comp":0.875,"demand_signal":5,"avg_sentiment":0.14,"evidence_count":5,"sentiment_sample":5},"gigachat_ai":{"score":67.5,"tier":"HIGH","f_demand":0.35,"f_position":0.8,"f_size":1.0,"f_sent":0.61,"f_comp":0.781,"demand_signal":7,"avg_sentiment":0.22,"evidence_count":7,"sentiment_sample":7},"cloud":{"score":53.1,"tier":"MEDIUM","f_demand":0.25,"f_position":0.45,"f_size":1.0,"f_sent":0.56,"f_comp":0.594,"demand_signal":5,"avg_sentiment":0.12,"evidence_count":5,"sentiment_sample":5},"cybersec":{"score":66.3,"tier":"HIGH","f_demand":0.4,"f_position":0.7,"f_size":1.0,"f_sent":0.64,"f_comp":0.719,"demand_signal":8,"avg_sentiment":0.28,"evidence_count":8,"sentiment_sample":8},"eco_sberprime":{"score":68.8,"tier":"HIGH","f_demand":0.2,"f_position":0.85,"f_size":1.0,"f_sent":0.515,"f_comp":0.75,"demand_signal":4,"avg_sentiment":0.03,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":68.7,"tier":"HIGH","f_demand":0.05,"f_position":0.9,"f_size":1.0,"f_sent":0.455,"f_comp":0.781,"demand_signal":1,"avg_sentiment":-0.09,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":65.3,"tier":"HIGH","f_demand":0.1,"f_position":0.8,"f_size":1.0,"f_sent":0.405,"f_comp":0.656,"demand_signal":2,"avg_sentiment":-0.19,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":74.0,"tier":"HIGH","f_demand":0.8,"f_position":0.8,"f_size":1.0,"f_sent":0.66,"f_comp":0.75,"demand_signal":16,"avg_sentiment":0.32,"evidence_count":16,"sentiment_sample":16,"anchor":0.0},"eco_mobile":{"score":63.4,"tier":"MEDIUM","f_demand":0.2,"f_position":0.7,"f_size":1.0,"f_sent":0.455,"f_comp":0.625,"demand_signal":4,"avg_sentiment":-0.09,"evidence_count":4,"sentiment_sample":5,"anchor":0.0}}},{"id":"ufsin_nw","name":"УФСИН по СПб и Ленобласти","short":"УФСИН СПб/ЛО","staff":15000,"type":"fsin","region":"СПб + Ленобласть","scores":{"salary_budget":{"score":31.4,"tier":"LOW","f_demand":0.0,"f_position":0.3,"f_size":0.5,"f_sent":0.575,"f_comp":0.531,"demand_signal":0,"avg_sentiment":0.15,"evidence_count":0,"sentiment_sample":5},"mil_mortgage":{"score":31.2,"tier":"LOW","f_demand":0.0,"f_position":0.35,"f_size":0.5,"f_sent":0.455,"f_comp":0.562,"demand_signal":0,"avg_sentiment":-0.09,"evidence_count":0,"sentiment_sample":5},"consumer_loan":{"score":61.8,"tier":"MEDIUM","f_demand":0.6,"f_position":0.65,"f_size":0.5,"f_sent":0.73,"f_comp":0.656,"demand_signal":12,"avg_sentiment":0.46,"evidence_count":12,"sentiment_sample":12},"npf_insurance":{"score":54.9,"tier":"MEDIUM","f_demand":0.45,"f_position":0.55,"f_size":0.5,"f_sent":0.72,"f_comp":0.688,"demand_signal":9,"avg_sentiment":0.44,"evidence_count":9,"sentiment_sample":9},"premium_service":{"score":44.4,"tier":"LOW","f_demand":0.1,"f_position":0.6,"f_size":0.5,"f_sent":0.655,"f_comp":0.656,"demand_signal":2,"avg_sentiment":0.31,"evidence_count":2,"sentiment_sample":5},"gov_dbo":{"score":44.0,"tier":"LOW","f_demand":0.1,"f_position":0.6,"f_size":0.5,"f_sent":0.565,"f_comp":0.75,"demand_signal":2,"avg_sentiment":0.13,"evidence_count":2,"sentiment_sample":5},"acquiring_fines":{"score":48.3,"tier":"MEDIUM","f_demand":0.05,"f_position":0.8,"f_size":0.5,"f_sent":0.535,"f_comp":0.875,"demand_signal":1,"avg_sentiment":0.07,"evidence_count":1,"sentiment_sample":5},"gigachat_ai":{"score":54.8,"tier":"MEDIUM","f_demand":0.25,"f_position":0.8,"f_size":0.5,"f_sent":0.635,"f_comp":0.781,"demand_signal":5,"avg_sentiment":0.27,"evidence_count":5,"sentiment_sample":5},"cloud":{"score":41.4,"tier":"LOW","f_demand":0.2,"f_position":0.45,"f_size":0.5,"f_sent":0.545,"f_comp":0.594,"demand_signal":4,"avg_sentiment":0.09,"evidence_count":4,"sentiment_sample":5},"cybersec":{"score":45.1,"tier":"MEDIUM","f_demand":0.05,"f_position":0.7,"f_size":0.5,"f_sent":0.595,"f_comp":0.719,"demand_signal":1,"avg_sentiment":0.19,"evidence_count":1,"sentiment_sample":5},"eco_sberprime":{"score":52.2,"tier":"MEDIUM","f_demand":0.25,"f_position":0.85,"f_size":0.5,"f_sent":0.59,"f_comp":0.75,"demand_signal":5,"avg_sentiment":0.18,"evidence_count":5,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":51.2,"tier":"MEDIUM","f_demand":0.0,"f_position":0.9,"f_size":0.5,"f_sent":0.565,"f_comp":0.781,"demand_signal":0,"avg_sentiment":0.13,"evidence_count":0,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":48.3,"tier":"MEDIUM","f_demand":0.1,"f_position":0.8,"f_size":0.5,"f_sent":0.505,"f_comp":0.656,"demand_signal":2,"avg_sentiment":0.01,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":48.3,"tier":"MEDIUM","f_demand":0.15,"f_position":0.75,"f_size":0.5,"f_sent":0.615,"f_comp":0.75,"demand_signal":3,"avg_sentiment":0.23,"evidence_count":3,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":44.5,"tier":"LOW","f_demand":0.0,"f_position":0.7,"f_size":0.5,"f_sent":0.57,"f_comp":0.625,"demand_signal":0,"avg_sentiment":0.14,"evidence_count":0,"sentiment_sample":5,"anchor":0.0}}},{"id":"ufssp_nw","name":"УФССП по СПб","short":"УФССП СПб","staff":4500,"type":"fssp","region":"СПб","scores":{"salary_budget":{"score":29.7,"tier":"LOW","f_demand":0.25,"f_position":0.3,"f_size":0.15,"f_sent":0.425,"f_comp":0.531,"demand_signal":5,"avg_sentiment":-0.15,"evidence_count":5,"sentiment_sample":5},"mil_mortgage":{"score":30.6,"tier":"LOW","f_demand":0.15,"f_position":0.35,"f_size":0.15,"f_sent":0.58,"f_comp":0.562,"demand_signal":3,"avg_sentiment":0.16,"evidence_count":3,"sentiment_sample":5},"consumer_loan":{"score":32.7,"tier":"LOW","f_demand":0.0,"f_position":0.65,"f_size":0.15,"f_sent":0.46,"f_comp":0.656,"demand_signal":0,"avg_sentiment":-0.08,"evidence_count":0,"sentiment_sample":5},"npf_insurance":{"score":33.1,"tier":"LOW","f_demand":0.05,"f_position":0.55,"f_size":0.15,"f_sent":0.535,"f_comp":0.688,"demand_signal":1,"avg_sentiment":0.07,"evidence_count":1,"sentiment_sample":5},"premium_service":{"score":33.6,"tier":"LOW","f_demand":0.05,"f_position":0.6,"f_size":0.15,"f_sent":0.505,"f_comp":0.656,"demand_signal":1,"avg_sentiment":0.01,"evidence_count":1,"sentiment_sample":5},"gov_dbo":{"score":41.2,"tier":"LOW","f_demand":0.2,"f_position":0.6,"f_size":0.15,"f_sent":0.645,"f_comp":0.75,"demand_signal":4,"avg_sentiment":0.29,"evidence_count":4,"sentiment_sample":5},"acquiring_fines":{"score":73.6,"tier":"HIGH","f_demand":0.95,"f_position":0.9,"f_size":0.15,"f_sent":0.725,"f_comp":0.875,"demand_signal":19,"avg_sentiment":0.45,"evidence_count":19,"sentiment_sample":19},"gigachat_ai":{"score":55.8,"tier":"MEDIUM","f_demand":0.55,"f_position":0.8,"f_size":0.15,"f_sent":0.565,"f_comp":0.781,"demand_signal":11,"avg_sentiment":0.13,"evidence_count":11,"sentiment_sample":11},"cloud":{"score":32.6,"tier":"LOW","f_demand":0.2,"f_position":0.45,"f_size":0.15,"f_sent":0.425,"f_comp":0.594,"demand_signal":4,"avg_sentiment":-0.15,"evidence_count":4,"sentiment_sample":5},"cybersec":{"score":49.4,"tier":"MEDIUM","f_demand":0.35,"f_position":0.7,"f_size":0.15,"f_sent":0.75,"f_comp":0.719,"demand_signal":7,"avg_sentiment":0.5,"evidence_count":7,"sentiment_sample":7},"eco_sberprime":{"score":37.7,"tier":"LOW","f_demand":0.0,"f_position":0.85,"f_size":0.15,"f_sent":0.64,"f_comp":0.75,"demand_signal":0,"avg_sentiment":0.28,"evidence_count":0,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":38.9,"tier":"LOW","f_demand":0.05,"f_position":0.9,"f_size":0.15,"f_sent":0.44,"f_comp":0.781,"demand_signal":1,"avg_sentiment":-0.12,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":36.6,"tier":"LOW","f_demand":0.15,"f_position":0.8,"f_size":0.15,"f_sent":0.52,"f_comp":0.656,"demand_signal":3,"avg_sentiment":0.04,"evidence_count":3,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":36.1,"tier":"LOW","f_demand":0.15,"f_position":0.75,"f_size":0.15,"f_sent":0.625,"f_comp":0.75,"demand_signal":3,"avg_sentiment":0.25,"evidence_count":3,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":32.4,"tier":"LOW","f_demand":0.05,"f_position":0.7,"f_size":0.15,"f_sent":0.495,"f_comp":0.625,"demand_signal":1,"avg_sentiment":-0.01,"evidence_count":1,"sentiment_sample":5,"anchor":0.0}}},{"id":"sztu","name":"Северо-Западное таможенное управление","short":"СЗТУ","staff":11000,"type":"customs","region":"СЗФО","scores":{"salary_budget":{"score":31.6,"tier":"LOW","f_demand":0.15,"f_position":0.3,"f_size":0.367,"f_sent":0.465,"f_comp":0.531,"demand_signal":3,"avg_sentiment":-0.07,"evidence_count":3,"sentiment_sample":5},"mil_mortgage":{"score":33.3,"tier":"LOW","f_demand":0.15,"f_position":0.35,"f_size":0.367,"f_sent":0.47,"f_comp":0.562,"demand_signal":3,"avg_sentiment":-0.06,"evidence_count":3,"sentiment_sample":5},"consumer_loan":{"score":47.2,"tier":"MEDIUM","f_demand":0.25,"f_position":0.65,"f_size":0.367,"f_sent":0.64,"f_comp":0.656,"demand_signal":5,"avg_sentiment":0.28,"evidence_count":5,"sentiment_sample":5},"npf_insurance":{"score":42.4,"tier":"LOW","f_demand":0.2,"f_position":0.55,"f_size":0.367,"f_sent":0.565,"f_comp":0.688,"demand_signal":4,"avg_sentiment":0.13,"evidence_count":4,"sentiment_sample":5},"premium_service":{"score":40.0,"tier":"LOW","f_demand":0.15,"f_position":0.6,"f_size":0.367,"f_sent":0.44,"f_comp":0.656,"demand_signal":3,"avg_sentiment":-0.12,"evidence_count":3,"sentiment_sample":5},"gov_dbo":{"score":44.8,"tier":"LOW","f_demand":0.2,"f_position":0.6,"f_size":0.367,"f_sent":0.595,"f_comp":0.75,"demand_signal":4,"avg_sentiment":0.19,"evidence_count":4,"sentiment_sample":5},"acquiring_fines":{"score":72.5,"tier":"HIGH","f_demand":0.85,"f_position":0.9,"f_size":0.367,"f_sent":0.56,"f_comp":0.875,"demand_signal":17,"avg_sentiment":0.12,"evidence_count":17,"sentiment_sample":17},"gigachat_ai":{"score":65.1,"tier":"HIGH","f_demand":0.65,"f_position":0.8,"f_size":0.367,"f_sent":0.695,"f_comp":0.781,"demand_signal":13,"avg_sentiment":0.39,"evidence_count":13,"sentiment_sample":13},"cloud":{"score":33.3,"tier":"LOW","f_demand":0.0,"f_position":0.45,"f_size":0.367,"f_sent":0.585,"f_comp":0.594,"demand_signal":0,"avg_sentiment":0.17,"evidence_count":0,"sentiment_sample":5},"cybersec":{"score":55.4,"tier":"MEDIUM","f_demand":0.5,"f_position":0.7,"f_size":0.367,"f_sent":0.56,"f_comp":0.719,"demand_signal":10,"avg_sentiment":0.12,"evidence_count":10,"sentiment_sample":10},"eco_sberprime":{"score":46.7,"tier":"MEDIUM","f_demand":0.2,"f_position":0.85,"f_size":0.367,"f_sent":0.52,"f_comp":0.75,"demand_signal":4,"avg_sentiment":0.04,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":47.9,"tier":"MEDIUM","f_demand":0.2,"f_position":0.9,"f_size":0.367,"f_sent":0.44,"f_comp":0.781,"demand_signal":4,"avg_sentiment":-0.12,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":44.2,"tier":"LOW","f_demand":0.2,"f_position":0.8,"f_size":0.367,"f_sent":0.42,"f_comp":0.656,"demand_signal":4,"avg_sentiment":-0.16,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":41.7,"tier":"LOW","f_demand":0.05,"f_position":0.75,"f_size":0.367,"f_sent":0.415,"f_comp":0.75,"demand_signal":1,"avg_sentiment":-0.17,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":39.8,"tier":"LOW","f_demand":0.0,"f_position":0.7,"f_size":0.367,"f_sent":0.57,"f_comp":0.625,"demand_signal":0,"avg_sentiment":0.14,"evidence_count":0,"sentiment_sample":5,"anchor":0.0}}},{"id":"sledkom_nw","name":"СК России по СПб","short":"СК СПб","staff":2500,"type":"sledkom","region":"СПб","scores":{"salary_budget":{"score":23.5,"tier":"LOW","f_demand":0.05,"f_position":0.3,"f_size":0.083,"f_sent":0.5,"f_comp":0.531,"demand_signal":1,"avg_sentiment":0.0,"evidence_count":1,"sentiment_sample":5},"mil_mortgage":{"score":28.9,"tier":"LOW","f_demand":0.2,"f_position":0.35,"f_size":0.083,"f_sent":0.46,"f_comp":0.562,"demand_signal":4,"avg_sentiment":-0.08,"evidence_count":4,"sentiment_sample":5},"consumer_loan":{"score":36.6,"tier":"LOW","f_demand":0.2,"f_position":0.65,"f_size":0.083,"f_sent":0.41,"f_comp":0.656,"demand_signal":4,"avg_sentiment":-0.18,"evidence_count":4,"sentiment_sample":5},"npf_insurance":{"score":29.9,"tier":"LOW","f_demand":0.0,"f_position":0.55,"f_size":0.083,"f_sent":0.505,"f_comp":0.688,"demand_signal":0,"avg_sentiment":0.01,"evidence_count":0,"sentiment_sample":5},"premium_service":{"score":42.2,"tier":"LOW","f_demand":0.3,"f_position":0.6,"f_size":0.083,"f_sent":0.665,"f_comp":0.656,"demand_signal":6,"avg_sentiment":0.33,"evidence_count":6,"sentiment_sample":6},"gov_dbo":{"score":36.1,"tier":"LOW","f_demand":0.2,"f_position":0.55,"f_size":0.083,"f_sent":0.48,"f_comp":0.75,"demand_signal":4,"avg_sentiment":-0.04,"evidence_count":4,"sentiment_sample":5},"acquiring_fines":{"score":40.2,"tier":"LOW","f_demand":0.1,"f_position":0.8,"f_size":0.083,"f_sent":0.45,"f_comp":0.875,"demand_signal":2,"avg_sentiment":-0.1,"evidence_count":2,"sentiment_sample":5},"gigachat_ai":{"score":49.2,"tier":"MEDIUM","f_demand":0.35,"f_position":0.8,"f_size":0.083,"f_sent":0.615,"f_comp":0.781,"demand_signal":7,"avg_sentiment":0.23,"evidence_count":7,"sentiment_sample":7},"cloud":{"score":28.1,"tier":"LOW","f_demand":0.1,"f_position":0.4,"f_size":0.083,"f_sent":0.5,"f_comp":0.594,"demand_signal":2,"avg_sentiment":-0.0,"evidence_count":2,"sentiment_sample":5},"cybersec":{"score":57.6,"tier":"MEDIUM","f_demand":0.7,"f_position":0.7,"f_size":0.083,"f_sent":0.685,"f_comp":0.719,"demand_signal":14,"avg_sentiment":0.37,"evidence_count":14,"sentiment_sample":14},"eco_sberprime":{"score":35.7,"tier":"LOW","f_demand":0.1,"f_position":0.85,"f_size":0.083,"f_sent":0.515,"f_comp":0.75,"demand_signal":2,"avg_sentiment":0.03,"evidence_count":2,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":35.8,"tier":"LOW","f_demand":0.0,"f_position":0.9,"f_size":0.083,"f_sent":0.4,"f_comp":0.781,"demand_signal":0,"avg_sentiment":-0.2,"evidence_count":0,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":35.4,"tier":"LOW","f_demand":0.2,"f_position":0.8,"f_size":0.083,"f_sent":0.65,"f_comp":0.656,"demand_signal":4,"avg_sentiment":0.3,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":31.3,"tier":"LOW","f_demand":0.0,"f_position":0.75,"f_size":0.083,"f_sent":0.42,"f_comp":0.75,"demand_signal":0,"avg_sentiment":-0.16,"evidence_count":0,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":30.2,"tier":"LOW","f_demand":0.05,"f_position":0.7,"f_size":0.083,"f_sent":0.525,"f_comp":0.625,"demand_signal":1,"avg_sentiment":0.05,"evidence_count":1,"sentiment_sample":5,"anchor":0.0}}},{"id":"prok_spb","name":"Прокуратура СПб","short":"Прокуратура СПб","staff":3200,"type":"prokuratura","region":"СПб","scores":{"salary_budget":{"score":26.0,"tier":"LOW","f_demand":0.05,"f_position":0.3,"f_size":0.107,"f_sent":0.635,"f_comp":0.531,"demand_signal":1,"avg_sentiment":0.27,"evidence_count":1,"sentiment_sample":5},"mil_mortgage":{"score":25.8,"tier":"LOW","f_demand":0.0,"f_position":0.35,"f_size":0.107,"f_sent":0.62,"f_comp":0.562,"demand_signal":0,"avg_sentiment":0.24,"evidence_count":0,"sentiment_sample":5},"consumer_loan":{"score":35.0,"tier":"LOW","f_demand":0.1,"f_position":0.65,"f_size":0.107,"f_sent":0.47,"f_comp":0.656,"demand_signal":2,"avg_sentiment":-0.06,"evidence_count":2,"sentiment_sample":5},"npf_insurance":{"score":36.4,"tier":"LOW","f_demand":0.15,"f_position":0.55,"f_size":0.107,"f_sent":0.61,"f_comp":0.688,"demand_signal":3,"avg_sentiment":0.22,"evidence_count":3,"sentiment_sample":5},"premium_service":{"score":41.5,"tier":"LOW","f_demand":0.25,"f_position":0.6,"f_size":0.107,"f_sent":0.69,"f_comp":0.656,"demand_signal":5,"avg_sentiment":0.38,"evidence_count":5,"sentiment_sample":5},"gov_dbo":{"score":39.1,"tier":"LOW","f_demand":0.2,"f_position":0.55,"f_size":0.107,"f_sent":0.645,"f_comp":0.75,"demand_signal":4,"avg_sentiment":0.29,"evidence_count":4,"sentiment_sample":5},"acquiring_fines":{"score":46.3,"tier":"MEDIUM","f_demand":0.25,"f_position":0.8,"f_size":0.107,"f_sent":0.53,"f_comp":0.875,"demand_signal":5,"avg_sentiment":0.06,"evidence_count":5,"sentiment_sample":5},"gigachat_ai":{"score":50.7,"tier":"MEDIUM","f_demand":0.35,"f_position":0.8,"f_size":0.107,"f_sent":0.685,"f_comp":0.781,"demand_signal":7,"avg_sentiment":0.37,"evidence_count":7,"sentiment_sample":7},"cloud":{"score":32.2,"tier":"LOW","f_demand":0.2,"f_position":0.4,"f_size":0.107,"f_sent":0.54,"f_comp":0.594,"demand_signal":4,"avg_sentiment":0.08,"evidence_count":4,"sentiment_sample":5},"cybersec":{"score":45.9,"tier":"MEDIUM","f_demand":0.35,"f_position":0.7,"f_size":0.107,"f_sent":0.57,"f_comp":0.719,"demand_signal":7,"avg_sentiment":0.14,"evidence_count":7,"sentiment_sample":7},"eco_sberprime":{"score":35.8,"tier":"LOW","f_demand":0.05,"f_position":0.85,"f_size":0.107,"f_sent":0.465,"f_comp":0.75,"demand_signal":1,"avg_sentiment":-0.07,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_spasibo":{"score":37.6,"tier":"LOW","f_demand":0.0,"f_position":0.9,"f_size":0.107,"f_sent":0.585,"f_comp":0.781,"demand_signal":0,"avg_sentiment":0.17,"evidence_count":0,"sentiment_sample":5,"anchor":0.0},"eco_samokat":{"score":33.9,"tier":"LOW","f_demand":0.05,"f_position":0.8,"f_size":0.107,"f_sent":0.47,"f_comp":0.656,"demand_signal":1,"avg_sentiment":-0.06,"evidence_count":1,"sentiment_sample":5,"anchor":0.0},"eco_zdorovie":{"score":34.3,"tier":"LOW","f_demand":0.2,"f_position":0.75,"f_size":0.107,"f_sent":0.455,"f_comp":0.75,"demand_signal":4,"avg_sentiment":-0.09,"evidence_count":4,"sentiment_sample":5,"anchor":0.0},"eco_mobile":{"score":31.1,"tier":"LOW","f_demand":0.1,"f_position":0.7,"f_size":0.107,"f_sent":0.45,"f_comp":0.625,"demand_signal":2,"avg_sentiment":-0.1,"evidence_count":2,"sentiment_sample":5,"anchor":0.0}}}],"products":{"salary_budget":{"name":"Зарплатный проект бюджет","category":"core","position":0.3},"mil_mortgage":{"name":"Военная ипотека (НИС/семейная)","category":"core","position":0.35},"consumer_loan":{"name":"Потребкредит","category":"core","position":0.65},"npf_insurance":{"name":"НПФ + СберСтрахование + ДМС","category":"core","position":0.55},"premium_service":{"name":"СберПервый (премиум)","category":"core","position":0.6},"gov_dbo":{"name":"ДБО для юрлиц + СУФД","category":"core","position":0.6},"acquiring_fines":{"name":"Эквайринг штрафов и пошлин","category":"core","position":0.8},"gigachat_ai":{"name":"GigaChat для госсектора","category":"core","position":0.8},"cloud":{"name":"SberCloud (аттестованный)","category":"core","position":0.45},"cybersec":{"name":"BI.ZONE / кибербез","category":"core","position":0.7},"eco_sberprime":{"name":"СберПрайм","category":"eco","position":0.85},"eco_spasibo":{"name":"СберСпасибо","category":"eco","position":0.9},"eco_samokat":{"name":"Самокат / Купер","category":"eco","position":0.8},"eco_zdorovie":{"name":"СберЗдоровье + Еаптека","category":"eco","position":0.75},"eco_mobile":{"name":"СберМобайл","category":"eco","position":0.7}},"playbooks":{"mvd":{"top_product":"consumer_loan","focus":["consumer_loan","eco_sberprime","acquiring_fines","premium_service"],"angle":"Массовый личный состав + гражданский персонал → быстрые розничные продукты и подписка на бонусы к зарплатному проекту","strengths":"СберПервый для комсостава, потребкредит за час, СберПрайм в подарок к ЗП-карте","avoid":"Не биться с ВТБ за централизованный зарплатный контракт — заходить через терорганы","trigger_keywords":["набор","комплектование","индексация довольствия"]},"minoborony":{"top_product":"mil_mortgage","focus":["mil_mortgage","consumer_loan","eco_zdorovie","cybersec"],"angle":"НИС + быт офицера. Рефинансирование чужой ипотеки под льготные ставки","strengths":"Скорость одобрения ипотеки, сеть отделений в гарнизонных городках, СберЗдоровье для удалённых частей","avoid":"СОГАЗ — кэптив МО, не пытаться отбить страхование жизни офицеров","trigger_keywords":["жилищный сертификат","НИС","гарнизон","довольствие"]},"rosgvard":{"top_product":"consumer_loan","focus":["consumer_loan","salary_budget","eco_sberprime","premium_service"],"angle":"Молодое ведомство, рост штата — окно для первичного захода. Заход через терорганы регионов СЗФО","strengths":"Готовый пакет 'новобранец' (карта + СберПрайм + кредит наличными)","avoid":"Не давить на централизацию — идти через территории","trigger_keywords":["набор","комплектование","вакансии Росгвардии"]},"mchs":{"top_product":"eco_zdorovie","focus":["eco_zdorovie","consumer_loan","cybersec","gigachat_ai"],"angle":"Удалённые арктические пункты постоянной дислокации → телемедицина, доставка лекарств","strengths":"СберЗдоровье + Еаптека — единственная экосистема с доставкой в НАО, Мурманск, Коми","avoid":"Не тратить ресурсы на конкуренцию с ведомственными медсанчастями МЧС","trigger_keywords":["удалённый гарнизон","Арктика","оснащение"]},"fsin":{"top_product":"consumer_loan","focus":["consumer_loan","npf_insurance","eco_sberprime","premium_service"],"angle":"Гражданский персонал + офицеры → розница + НПФ","strengths":"Мультипродуктовое предложение через терорганы","avoid":"Осторожно с кибербезом — специфика режимных объектов","trigger_keywords":["штат ФСИН","переаттестация","довольствие"]},"fssp":{"top_product":"acquiring_fines","focus":["acquiring_fines","gigachat_ai","gov_dbo","cybersec"],"angle":"Профильный продукт — эквайринг взысканий. Плюс автоматизация типовых обращений через GigaChat","strengths":"Крупнейшая эквайринговая сеть в РФ, интеграция со СБП","avoid":"Розница вторична — акцент на b2g-продукты","trigger_keywords":["исполнительное производство","штраф","госпошлина"]},"customs":{"top_product":"acquiring_fines","focus":["acquiring_fines","gigachat_ai","gov_dbo","cybersec"],"angle":"Пошлины + автоматизация решений таможенных инспекторов через ИИ","strengths":"Эквайринговая сеть, GigaChat для типовых декларантских запросов","avoid":"Не давить на цифровизацию ЕАИС — это внутренний ФТС-контур","trigger_keywords":["пошлина","таможенное оформление","цифровизация ФТС"]},"sledkom":{"top_product":"cybersec","focus":["cybersec","premium_service","gigachat_ai"],"angle":"Ограниченный штат высокооплачиваемых спецов → премиум + узкоспецифичный кибербез","strengths":"BI.ZONE — экспертиза цифровой криминалистики","avoid":"Розница малая доля рынка — не приоритет","trigger_keywords":["киберпреступление","цифровая криминалистика"]},"prokuratura":{"top_product":"cybersec","focus":["cybersec","premium_service","gigachat_ai"],"angle":"Аналогично СК — премиум + узкие b2g-решения","strengths":"GigaChat для типовых прокурорских проверок","avoid":"Не давить на массовые продукты","trigger_keywords":["надзор","проверка","цифровизация прокуратуры"]}},"market_shares":{"salary_budget_siloviki":{"vtb":0.6,"gpb":0.2,"sber":0.1,"pochta":0.05,"other":0.05,"source":"Frank RG 2024 + экспертная корректировка по силовому сегменту","updated_at":"2026-08-25"},"mil_mortgage_all":{"vtb":0.4,"gpb":0.25,"psb":0.15,"sber":0.1,"dom_rf":0.05,"other":0.05,"source":"Росвоенипотека + banki.ru агрегат 2026","updated_at":"2026-08-25"},"premium_retail":{"sber_perviy":0.35,"vtb_privilegia":0.25,"tbank_premium":0.2,"alfa_only":0.1,"gpb_privat":0.05,"other":0.05,"source":"Экспертная оценка по числу активных клиентов сегмента","updated_at":"2026-08-25"},"consumer_loan_siloviki":{"vtb":0.35,"sber":0.2,"pochta":0.15,"psb":0.1,"sovcom":0.1,"tbank":0.05,"other":0.05,"source":"Frank RG розничное кредитование + оценка по силовому сегменту","updated_at":"2026-08-25"}},"competitor_matrix":{"consumer_loan":[{"bank":"sber","product_key":"consumer_loan","product_name":"Кредит наличными бюджетникам","rate_min":21.5,"rate_max":null,"max_amount_rub":5000000,"term_months_max":60,"usp":"Скорость одобрения (за час), связка с экосистемой","weakness":"Ставка не самая низкая; жёсткая проверка ПДН","source_url":"https://www.sberbank.ru/ru/person/credits/money","updated_at":"2026-08-25","is_stale":false},{"bank":"vtb","product_key":"consumer_loan","product_name":"Кредит зарплатным клиентам-силовикам","rate_min":20.9,"rate_max":null,"max_amount_rub":7000000,"term_months_max":84,"usp":"Держатель зарплатника у большинства силовиков — максимум одобрения","weakness":"Медленное оформление, много бумаги","source_url":"https://www.vtb.ru/personal/kredity/","updated_at":"2026-08-25","is_stale":false},{"bank":"psb","product_key":"consumer_loan","product_name":"Для военных и гражданских пенсионеров","rate_min":26.9,"rate_max":36.9,"max_amount_rub":3000000,"term_months_max":84,"usp":"Акция «Лучше ноль» — возврат процентов при выполнении условий","weakness":"Сложные условия акции; базовая ставка одна из самых высоких","source_url":"https://www.psbank.ru/personal/loans/creditaction","updated_at":"2026-08-25","is_stale":false},{"bank":"pochta","product_key":"consumer_loan","product_name":"Потребительский кредит","rate_min":11.9,"rate_max":null,"max_amount_rub":6000000,"term_months_max":84,"usp":"Уникальная сеть отделений в глубинке СЗФО (Карелия, Коми, НАО)","weakness":"Ставка «от 11,9%» маркетинговая — фактическая 24–29%","source_url":"https://www.pochtabank.ru/service/loans","updated_at":"2026-08-25","is_stale":false},{"bank":"sovcom","product_key":"consumer_loan","product_name":"Карта Халва","rate_min":0.0,"rate_max":14.205,"max_amount_rub":500000,"term_months_max":24,"usp":"0% в рассрочку у 260 000+ магазинов, льготный период до 1080 дней","weakness":"Не заменит крупный кредит; максимум 500 тыс ₽","source_url":"https://halvacard.ru","updated_at":"2026-08-25","is_stale":false},{"bank":"tbank","product_key":"consumer_loan","product_name":"Кредит наличными","rate_min":22.9,"rate_max":null,"max_amount_rub":5000000,"term_months_max":60,"usp":"Всё онлайн, оформление за 15 минут, курьер","weakness":"Нет офисов в глубинке СЗФО","source_url":"https://www.tbank.ru/loans/cash-loan/","updated_at":"2026-08-25","is_stale":false}],"mil_mortgage":[{"bank":"vtb","product_key":"mil_mortgage","product_name":"Военная ипотека НИС","rate_min":18.5,"rate_max":21.0,"max_amount_rub":15000000,"term_months_max":300,"usp":"Историческая связка с НИС — доля рынка ~40%","weakness":"Долгое согласование; ограничения по вторичке","source_url":"https://www.vtb.ru/personal/ipoteka/voennaya/","updated_at":"2026-08-25","is_stale":false},{"bank":"gpb","product_key":"mil_mortgage","product_name":"Военная ипотека","rate_min":18.5,"rate_max":21.5,"max_amount_rub":15000000,"term_months_max":300,"usp":"Оператор НИС для ряда ведомств; лидер по семейной ипотеке в силовом сегменте","weakness":"Меньше отделений, чем у ВТБ и Сбера","source_url":"https://www.gazprombank.ru/personal/ipoteka/voennaya/","updated_at":"2026-08-25","is_stale":false},{"bank":"psb","product_key":"mil_mortgage","product_name":"Военная ипотека","rate_min":19.0,"rate_max":22.0,"max_amount_rub":12000000,"term_months_max":300,"usp":"Опорный банк ОПК; простое оформление для участников СВО","weakness":"Меньше сеть партнёров-застройщиков","source_url":"https://www.psbank.ru/personal/ipoteka/military","updated_at":"2026-08-25","is_stale":false},{"bank":"sber","product_key":"mil_mortgage","product_name":"Военная ипотека Сбера","rate_min":19.5,"rate_max":22.5,"max_amount_rub":15000000,"term_months_max":300,"usp":"Скорость одобрения, максимальная сеть отделений, экосистема после сделки","weakness":"Не оператор НИС; меньше доля в первичных выдачах","source_url":"https://www.sberbank.ru/ru/person/credits/home/army","updated_at":"2026-08-25","is_stale":false},{"bank":"dom_rf","product_key":"mil_mortgage","product_name":"Военная ипотека ДОМ.РФ","rate_min":18.0,"rate_max":20.5,"max_amount_rub":15000000,"term_months_max":300,"usp":"Оператор госпрограмм; доступ к квартирам от ДОМ.РФ по спеццене","weakness":"Малое покрытие розничной сетью в СЗФО","source_url":"https://xn--h1alcedd.xn--d1aqf.xn--p1ai/mortgage/military/","updated_at":"2026-08-25","is_stale":false}],"premium_service":[{"bank":"sber","product_key":"premium_service","product_name":"СберПервый","rate_min":null,"rate_max":null,"max_amount_rub":null,"term_months_max":null,"usp":"Экосистема + консьерж + СберПрайм в подарок; крупнейшая база премиум-клиентов","weakness":"Порог входа по зарплате выше, чем у Т-Премиум","source_url":"https://www.sberbank.ru/ru/person/premier","updated_at":"2026-08-25","is_stale":false},{"bank":"tbank","product_key":"premium_service","product_name":"Т-Премиум (Black Premium)","rate_min":null,"rate_max":12.12,"max_amount_rub":null,"term_months_max":null,"usp":"Кэшбэк до 60 000 ₽/мес, вклад до 12,12%, порог по зарплате 400 тыс/мес","weakness":"Нет физических отделений; премиальная поддержка только по телефону","source_url":"https://www.tbank.ru/tinkoff-premium/","updated_at":"2026-08-25","is_stale":false},{"bank":"vtb","product_key":"premium_service","product_name":"ВТБ Привилегия","rate_min":null,"rate_max":null,"max_amount_rub":null,"term_months_max":null,"usp":"Автоматическое подключение офицерам-зарплатникам от 300 тыс/мес","weakness":"Слабый кэшбэк vs Т-Премиум и СберПервый; устаревшее приложение","source_url":"https://www.vtb.ru/personal/privileg/","updated_at":"2026-08-25","is_stale":false},{"bank":"gpb","product_key":"premium_service","product_name":"Газпромбанк Приват","rate_min":null,"rate_max":null,"max_amount_rub":null,"term_months_max":null,"usp":"Wealth management для высшего офицерского состава","weakness":"Порог 15 млн ₽ — только верхний генералитет и адмиралы","source_url":"https://www.gazprombank.ru/private-banking/","updated_at":"2026-08-25","is_stale":false},{"bank":"alfa","product_key":"premium_service","product_name":"Альфа Only","rate_min":null,"rate_max":null,"max_amount_rub":null,"term_months_max":null,"usp":"Дизайн, скорость, современное приложение — заходит молодому офицерскому составу","weakness":"Нет истории работы с силовиками; ограниченная сеть в СЗФО","source_url":"https://alfabank.ru/only/","updated_at":"2026-08-25","is_stale":false}]},"competitor_matrix_meta":{"last_refresh_attempt":"2026-08-25","parsers_succeeded":0,"parsers_stale":0,"note":"Seed-данные заведены вручную. Парсеры подключаются через scripts/refresh_competitors.py."}};
+</script>
+<script>
+// ============================================================================
+// РЕНДЕР
+// ============================================================================
+const BANK_NAMES = {
+  sber: 'Сбер', vtb: 'ВТБ', gpb: 'Газпромбанк', psb: 'ПСБ',
+  pochta: 'Почта Банк', sovcom: 'Совкомбанк', tbank: 'Т-Банк',
+  alfa: 'Альфа-Банк', dom_rf: 'ДОМ.РФ'
+};
+
+function renderKPIs() {
+  const totalAgencies = DATA.agencies.length;
+  const totalStaff = DATA.agencies.reduce((s, a) => s + a.staff, 0);
+  let high = 0, medium = 0, low = 0;
+  DATA.agencies.forEach(a => Object.values(a.scores).forEach(c => {
+    if (c.tier === 'HIGH') high++;
+    else if (c.tier === 'MEDIUM') medium++;
+    else low++;
+  }));
+  const html = [
+    { label: 'Ведомств', value: totalAgencies, sub: 'силовой периметр СЗФО' },
+    { label: 'Совокупный штат', value: (totalStaff / 1000).toFixed(0) + ' тыс', sub: 'потенциальная база личного состава' },
+    { label: 'Продуктов Сбера', value: Object.keys(DATA.products).length, sub: '10 core + 5 eco' },
+    { label: 'HIGH-сегментов', value: high, sub: 'приоритет ≥ 65 баллов' },
+    { label: 'MEDIUM-сегментов', value: medium, sub: '45–64 балла' },
+  ].map(k => `
+    <div class="kpi">
+      <div class="label">${k.label}</div>
+      <div class="value">${k.value}</div>
+      <div class="sub">${k.sub}</div>
+    </div>`).join('');
+  document.getElementById('kpi-strip').innerHTML = html;
+}
+
+function renderMatrix() {
+  const products = Object.entries(DATA.products);
+  let html = '<thead><tr><th class="corner">Ведомство</th>';
+  html += products.map(([pk, p]) => `<th title="${p.name}">${p.name}</th>`).join('');
+  html += '</tr></thead><tbody>';
+
+  DATA.agencies.forEach(a => {
+    html += `<tr><th>
+      <div>${a.short}</div>
+      <div class="region">${a.region}</div>
+      <div class="staff">${a.staff.toLocaleString('ru-RU')} чел.</div>
+    </th>`;
+    products.forEach(([pk, p]) => {
+      const cell = a.scores[pk];
+      html += `<td class="score-cell tier-${cell.tier}"
+        title="${a.short} × ${p.name}: ${cell.score} (${cell.tier})"
+        onclick="openScoreModal('${a.id}', '${pk}')">
+        ${cell.score.toFixed(0)}
+        <button class="why-btn" onclick="event.stopPropagation(); openScoreModal('${a.id}', '${pk}')" title="Расшифровка">?</button>
+      </td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody>';
+  document.getElementById('matrix-table').innerHTML = html;
+}
+
+function renderAgencyCompetitorStrip(topProductKey) {
+  const rows = (DATA.competitor_matrix?.[topProductKey]) || [];
+  if (!rows.length) return '';
+  const rivals = rows.filter(r => r.bank !== 'sber').slice(0, 3);
+  if (!rivals.length) return '';
+  return `
+    <div class="agency-competitor-strip">
+      <span class="label">Обыгрываем в сегменте:</span>
+      ${rivals.map(r => `<span class="rival"><b>${BANK_NAMES[r.bank] || r.bank}</b> — ${r.product_name}</span>`).join('')}
+    </div>`;
+}
+
+function renderAgencies() {
+  const html = DATA.agencies.map(a => {
+    const pb = DATA.playbooks[a.type] || {};
+    const top3 = Object.entries(a.scores)
+      .map(([pk, c]) => ({ pk, name: DATA.products[pk].name, score: c.score, tier: c.tier }))
+      .sort((x, y) => y.score - x.score).slice(0, 3);
+
+    return `
+      <div class="agency-card">
+        <div class="head">
+          <div>
+            <div class="name">${a.name}</div>
+            <div class="region">${a.region}</div>
+          </div>
+          <span class="staff-badge">${a.staff.toLocaleString('ru-RU')} чел.</span>
+        </div>
+        ${pb.top_product ? `
+          <div class="playbook-badge">
+            <span class="tag">★ Тактика</span>
+            <div class="top-product">Приоритет: ${DATA.products[pb.top_product]?.name}</div>
+            <div class="angle">${pb.angle}</div>
+          </div>
+          ${renderAgencyCompetitorStrip(pb.top_product)}` : ''}
+        <div class="top-scores">
+          ${top3.map(t => `
+            <div class="item">
+              <div class="score" style="color: ${t.tier === 'HIGH' ? 'var(--sber)' : t.tier === 'MEDIUM' ? 'var(--medium)' : 'var(--muted)'};">${t.score.toFixed(0)}</div>
+              <div class="name">${t.name}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('agency-grid').innerHTML = html;
+}
+
+function renderCompetitors() {
+  const productKey = document.getElementById('competitor-product-filter').value;
+  const rows = (DATA.competitor_matrix?.[productKey]) || [];
+  const meta = DATA.competitor_matrix_meta || {};
+  document.getElementById('competitors-meta').textContent =
+    meta.last_refresh_attempt ? `Последнее обновление: ${meta.last_refresh_attempt}.` : '';
+
+  const fmtAmount = v => v == null ? '—' :
+    (v >= 1_000_000 ? (v / 1_000_000).toFixed(1) + ' млн ₽' : (v / 1000).toFixed(0) + ' тыс ₽');
+  const fmtRate = (mn, mx) => {
+    if (mn == null) return '—';
+    if (mn === 0 && mx != null) return `0–${mx}`;
+    if (mx != null && mx !== mn) return `${mn}–${mx}`;
+    return `от ${mn}`;
+  };
+
+  const tbody = document.getElementById('competitor-tbody');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Нет данных по этому продукту</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr class="${r.bank === 'sber' ? 'sber-row' : ''}">
+      <td><b>${BANK_NAMES[r.bank] || r.bank}</b>${r.is_stale ? '<span class="stale-badge" title="Данные устарели">stale</span>' : ''}</td>
+      <td>${r.product_name}</td>
+      <td class="rate-cell">${fmtRate(r.rate_min, r.rate_max)}</td>
+      <td>${fmtAmount(r.max_amount_rub)}</td>
+      <td>
+        <div class="usp">✓ ${r.usp}</div>
+        <div class="weakness">✗ ${r.weakness}</div>
+      </td>
+      <td><a href="${r.source_url}" target="_blank" rel="noopener" title="Открыть источник">→</a></td>
+    </tr>`).join('');
+}
+
+function openScoreModal(agencyId, productKey) {
+  const agency = DATA.agencies.find(a => a.id === agencyId);
+  const product = DATA.products[productKey];
+  const cell = agency?.scores?.[productKey];
+  if (!agency || !product || !cell) return;
+
+  const isEco = product.category === 'eco';
+  const weights = isEco
+    ? [['f_size', 0.35], ['f_position', 0.30], ['f_demand', 0.10], ['f_sent', 0.05], ['f_comp', 0.05]]
+    : [['f_demand', 0.30], ['f_position', 0.25], ['f_size', 0.20], ['f_sent', 0.15], ['f_comp', 0.10]];
+
+  const rows = weights.map(([k, w]) => {
+    const v = cell[k] ?? 0;
+    const contrib = (v * w * 100).toFixed(1);
+    return `<div class="formula-row">
+      <span><span class="name">${k}</span><span class="weight">× ${w}</span></span>
+      <span><span class="value">${v.toFixed(3)}</span> <span class="contrib">+${contrib}</span></span>
+    </div>`;
+  }).join('');
+
+  const anchorRow = isEco && cell.anchor
+    ? `<div class="formula-row" style="border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px;">
+        <span><span class="name">anchor</span><span class="weight">(бонус за зарплатник Сбера)</span></span>
+        <span><span class="contrib">+${(cell.anchor * 100).toFixed(1)}</span></span>
+      </div>` : '';
+
+  const html = `
+    <div class="score-line">
+      <b>${cell.score}</b><span class="tier-chip ${cell.tier}">${cell.tier}</span>
+      &nbsp;·&nbsp; ${agency.short} × ${product.name}
+    </div>
+    <div class="formula-block">${rows}${anchorRow}</div>
+    <div style="font-size: 12px; color: var(--muted); margin-top: 12px;">
+      <b>demand_signal:</b> ${cell.demand_signal} (порог 20 = максимум)<br>
+      <b>avg_sentiment:</b> ${cell.avg_sentiment} по ${cell.sentiment_sample} источникам<br>
+      <b>Формула:</b> <code>${isEco ? 'eco: f_size·0.35 + f_position·0.30 + f_demand·0.10 + f_sent·0.05 + f_comp·0.05 + anchor' : 'core: f_demand·0.30 + f_position·0.25 + f_size·0.20 + f_sent·0.15 + f_comp·0.10'}</code>
+    </div>`;
+
+  document.getElementById('scoreModal-title').textContent = `${agency.short} × ${product.name}`;
+  document.getElementById('scoreModal-body').innerHTML = html;
+  document.getElementById('scoreModal').classList.add('active');
+}
+function closeScoreModal() {
+  document.getElementById('scoreModal').classList.remove('active');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeScoreModal(); });
+
+// Bootstrap
+document.addEventListener('DOMContentLoaded', () => {
+  renderKPIs();
+  renderMatrix();
+  renderAgencies();
+  renderCompetitors();
+});
+</script>
+
 </body>
 </html>
