@@ -13,33 +13,97 @@
     --high:#21a038; --medium:#d4a017; --low:#4a4d52;
     --red:#e05555; --violet:#8b5cf6;
     --fresh:#21a038; --aging:#d4a017; --stale:#e05555; --none:#4a4d52;
+    --header-h: 56px;
   }
   *{box-sizing:border-box;}
+  html,body{overflow-x:hidden;}
   body{margin:0;padding:0;background:var(--bg);color:var(--text);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Roboto","Helvetica Neue",Arial,sans-serif;
     font-size:14px;line-height:1.5;}
+
   header.sticky{position:sticky;top:0;z-index:100;background:rgba(15,17,20,0.95);
     backdrop-filter:blur(10px);border-bottom:1px solid var(--border);
-    padding:14px 24px;display:flex;justify-content:space-between;align-items:center;}
-  header.sticky h1{margin:0;font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;}
+    padding:12px 20px;display:flex;justify-content:space-between;align-items:center;
+    height:var(--header-h);}
+  header.sticky h1{margin:0;font-size:15px;font-weight:600;display:flex;align-items:center;gap:10px;}
   header.sticky .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--sber);
     box-shadow:0 0 12px var(--sber-glow);}
   header.sticky .meta{font-size:11px;color:var(--muted);}
-  main{max-width:1600px;margin:0 auto;padding:24px;}
-  section{margin-bottom:40px;}
-  h2{font-size:20px;font-weight:500;margin:0 0 6px 0;color:var(--text);}
+  main{max-width:1500px;margin:0 auto;padding:20px;}
+  section{margin-bottom:36px;}
+  h2{font-size:19px;font-weight:500;margin:0 0 6px 0;color:var(--text);}
   h2 .accent{color:var(--sber);}
-  .section-desc{color:var(--muted);font-size:13px;margin-bottom:16px;}
+  .section-desc{color:var(--muted);font-size:13px;margin-bottom:14px;}
 
-  .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:32px;}
-  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
-  .kpi .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
-  .kpi .value{font-size:24px;font-weight:600;margin-top:4px;color:var(--sber);}
-  .kpi .sub{font-size:11px;color:var(--muted);margin-top:4px;}
+  /* KPI */
+  .kpi-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:28px;}
+  .kpi{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+  .kpi .label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+  .kpi .value{font-size:22px;font-weight:600;margin-top:2px;color:var(--sber);}
+  .kpi .sub{font-size:10px;color:var(--muted);margin-top:2px;}
 
-  /* Регион-навигация */
+  /* Компактная матрица регионы × продукты (10×16) */
+  .matrix-wrap{
+    overflow-x:auto;
+    /* никакого max-height и overflow-y! иначе sticky ломается */
+    -webkit-overflow-scrolling:touch;
+    border:1px solid var(--border);border-radius:8px;
+    background:var(--panel);
+  }
+  table.matrix{border-collapse:collapse;font-size:12px;background:var(--panel);
+    min-width:100%;width:max-content;}
+  table.matrix th, table.matrix td{
+    padding:8px 6px;text-align:center;
+    border-right:1px solid var(--border);border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  table.matrix thead th{
+    background:var(--panel-hi);font-weight:500;color:var(--muted);
+    font-size:11px;
+    position:sticky;top:var(--header-h);z-index:6;
+    height:56px;min-width:74px;max-width:74px;
+    padding:8px 4px;vertical-align:bottom;
+    white-space:normal;line-height:1.2;cursor:help;
+  }
+  table.matrix thead th.corner{
+    text-align:left;min-width:210px;max-width:210px;
+    vertical-align:middle;padding:10px 14px;z-index:7;
+    left:0;position:sticky;
+    background:var(--panel-hi);
+    font-size:12px;color:var(--text);font-weight:600;
+  }
+  table.matrix tbody th{
+    background:var(--panel-hi);text-align:left;
+    padding:10px 14px;font-weight:500;
+    min-width:210px;max-width:210px;
+    position:sticky;left:0;z-index:4;
+    border-right:2px solid var(--border);
+  }
+  table.matrix tbody th .region-name{font-weight:600;font-size:13px;line-height:1.3;}
+  table.matrix tbody th .region-meta{font-size:10px;color:var(--muted);margin-top:2px;}
+
+  /* Ячейка со скором региона */
+  .agg-cell{position:relative;cursor:pointer;transition:transform 0.1s;font-weight:600;
+    min-width:74px;padding:12px 4px;}
+  .agg-cell:hover{transform:scale(1.06);z-index:3;
+    box-shadow:0 0 0 2px var(--sber);border-radius:2px;}
+  .agg-cell.tier-HIGH{background:rgba(33,160,56,0.35);color:#fff;}
+  .agg-cell.tier-MEDIUM{background:rgba(212,160,23,0.28);color:#fff;}
+  .agg-cell.tier-LOW{background:rgba(74,77,82,0.35);color:var(--muted);}
+  .agg-cell .score{font-size:15px;line-height:1;}
+  .agg-cell .top-hint{font-size:9px;color:rgba(255,255,255,0.65);
+    margin-top:3px;text-transform:uppercase;letter-spacing:0.3px;
+    overflow:hidden;text-overflow:ellipsis;max-width:66px;}
+  .agg-cell.tier-LOW .top-hint{color:var(--muted);}
+
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:8px;
+    align-items:center;flex-wrap:wrap;}
+  .legend .sw{display:inline-block;width:12px;height:12px;border-radius:2px;
+    margin-right:6px;vertical-align:middle;}
+
+  /* Раздел карточек ведомств — региональные блоки */
   .region-nav{background:var(--panel);border:1px solid var(--border);border-radius:6px;
-    padding:10px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:6px;
+    padding:10px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:6px;
     font-size:12px;align-items:center;}
   .region-nav .label{color:var(--muted);margin-right:8px;text-transform:uppercase;
     font-size:10px;letter-spacing:0.5px;}
@@ -47,108 +111,40 @@
     border:1px solid var(--sber-dim);border-radius:12px;transition:background 0.15s;}
   .region-nav a:hover{background:var(--sber-glow);}
 
-  /* Матрица */
-  .matrix-wrap{overflow:auto;max-height:80vh;border:1px solid var(--border);border-radius:8px;}
-  table.matrix{border-collapse:collapse;font-size:12px;background:var(--panel);
-    min-width:1400px;}
-  table.matrix th, table.matrix td{padding:8px 6px;text-align:center;
-    border-right:1px solid var(--border);border-bottom:1px solid var(--border);
-    white-space:nowrap;}
-  table.matrix thead th{background:var(--panel-hi);font-weight:500;color:var(--muted);
-    font-size:11px;position:sticky;top:0;z-index:6;
-    height:60px;min-width:74px;max-width:74px;
-    padding:8px 4px;vertical-align:bottom;
-    white-space:normal;line-height:1.2;cursor:help;}
-  table.matrix thead th.corner{text-align:left;min-width:230px;max-width:230px;
-    vertical-align:middle;padding:10px 12px;z-index:7;left:0;position:sticky;}
-  table.matrix tbody th{background:var(--panel-hi);text-align:left;
-    padding:10px 12px;font-weight:500;min-width:230px;max-width:230px;
-    position:sticky;left:0;z-index:4;
-    border-right:2px solid var(--border);}
-  table.matrix tbody th .staff{font-size:10px;color:var(--muted);font-weight:400;margin-top:2px;}
-  table.matrix tbody th .type-tag{display:inline-block;font-size:9px;color:var(--sber);
-    background:var(--sber-glow);padding:1px 5px;border-radius:2px;margin-right:5px;
-    text-transform:uppercase;letter-spacing:0.5px;vertical-align:middle;}
-  /* Заголовок региона — тёмная полоса поверх всей таблицы */
-  tr.region-header th{
-    background:var(--panel-region);color:var(--sber);
-    font-size:12px;font-weight:600;text-align:left;
-    padding:10px 14px;
-    text-transform:uppercase;letter-spacing:0.7px;
-    position:sticky;left:0;z-index:5;
-    border-bottom:2px solid var(--sber-dim);
-    border-top:2px solid var(--bg);
-    max-width:none;min-width:0;
-  }
-  tr.region-header th .region-count{color:var(--muted);font-weight:400;
-    font-size:10px;margin-left:10px;text-transform:none;letter-spacing:0;}
-
-  .score-cell{position:relative;cursor:pointer;transition:transform 0.1s;font-weight:600;
-    min-width:74px;padding:10px 4px;}
-  .score-cell:hover{transform:scale(1.05);z-index:3;}
-  .score-cell.tier-HIGH{background:rgba(33,160,56,0.35);color:#fff;}
-  .score-cell.tier-MEDIUM{background:rgba(212,160,23,0.28);color:#fff;}
-  .score-cell.tier-LOW{background:rgba(74,77,82,0.35);color:var(--muted);}
-  .score-cell .why-btn{position:absolute;top:1px;right:1px;
-    width:14px;height:14px;border-radius:50%;
-    background:rgba(255,255,255,0.15);color:#fff;
-    font-size:9px;line-height:14px;text-align:center;
-    border:none;cursor:pointer;opacity:0;padding:0;transition:opacity 0.15s;}
-  .score-cell:hover .why-btn{opacity:1;}
-  .score-cell .why-btn:hover{background:rgba(255,255,255,0.35);}
-  .freshness-dot{position:absolute;bottom:2px;left:2px;
-    width:6px;height:6px;border-radius:50%;
-    box-shadow:0 0 0 1px rgba(0,0,0,0.35);}
-  .freshness-dot.fresh{background:var(--fresh);}
-  .freshness-dot.aging{background:var(--aging);}
-  .freshness-dot.stale{background:var(--stale);}
-  .freshness-dot.none{background:var(--none);}
-
-  .legend{display:flex;gap:16px;font-size:11px;color:var(--muted);margin-top:8px;
-    align-items:center;flex-wrap:wrap;}
-  .legend .sw{display:inline-block;width:12px;height:12px;border-radius:2px;
-    margin-right:6px;vertical-align:middle;}
-  .legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;
-    margin-right:5px;vertical-align:middle;}
-
-  /* Ведомства-раздел, группировка по регионам */
   .region-block{margin-bottom:32px;}
   .region-block-title{font-size:14px;color:var(--sber);text-transform:uppercase;
     letter-spacing:0.7px;font-weight:600;margin-bottom:10px;padding-bottom:6px;
-    border-bottom:1px solid var(--sber-dim);}
-  .agency-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;}
-  .agency-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;
-    display:flex;flex-direction:column;}
+    border-bottom:1px solid var(--sber-dim);
+    display:flex;justify-content:space-between;align-items:center;}
+  .region-block-title .count{color:var(--muted);font-weight:400;font-size:11px;
+    text-transform:none;letter-spacing:0;}
+  .agency-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
+  .agency-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;
+    padding:14px;display:flex;flex-direction:column;}
   .agency-card .head{display:flex;justify-content:space-between;align-items:start;gap:8px;}
-  .agency-card .name{font-weight:600;font-size:14px;line-height:1.3;}
-  .agency-card .staff-badge{font-size:11px;color:var(--muted);background:var(--panel-hi);
-    padding:2px 8px;border-radius:12px;white-space:nowrap;}
-  .agency-card .region{color:var(--muted);font-size:11px;margin-top:2px;}
+  .agency-card .name{font-weight:600;font-size:13px;line-height:1.3;}
+  .agency-card .staff-badge{font-size:10px;color:var(--muted);background:var(--panel-hi);
+    padding:2px 7px;border-radius:12px;white-space:nowrap;}
+  .agency-card .type-tag{display:inline-block;font-size:9px;color:var(--sber);
+    background:var(--sber-glow);padding:1px 5px;border-radius:2px;margin-right:5px;
+    text-transform:uppercase;letter-spacing:0.5px;vertical-align:middle;}
   .playbook-badge{background:linear-gradient(135deg,var(--sber-glow),rgba(139,92,246,0.10));
     border:1px solid var(--sber-dim);padding:8px 10px;border-radius:6px;
-    margin:10px 0 6px 0;font-size:11px;}
-  .playbook-badge .tag{display:inline-block;font-size:9px;color:var(--sber);
-    background:var(--sber-glow);padding:1px 5px;border-radius:3px;margin-bottom:4px;
-    text-transform:uppercase;letter-spacing:0.5px;}
-  .playbook-badge .top-product{font-weight:600;margin-bottom:3px;font-size:12px;}
-  .agency-competitor-strip{background:var(--bg);border-left:3px solid var(--sber);
-    padding:6px 10px;margin:4px 0 8px 0;font-size:10px;border-radius:3px;}
-  .agency-competitor-strip .label{color:var(--muted);margin-right:5px;text-transform:uppercase;
-    font-size:9px;letter-spacing:0.5px;}
-  .agency-competitor-strip .rival{display:inline-block;margin-right:8px;color:#f0a0a0;}
-  .agency-competitor-strip .rival b{color:#f5c8c8;}
-  .top-scores{margin-top:auto;padding-top:10px;border-top:1px solid var(--border);
+    margin:8px 0 6px 0;font-size:11px;}
+  .playbook-badge .top-product{font-weight:600;margin-bottom:3px;font-size:12px;color:var(--sber);}
+  .top-scores{margin-top:auto;padding-top:8px;border-top:1px solid var(--border);
     display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-  .top-scores .item{background:var(--panel-hi);border-radius:4px;padding:6px;text-align:center;}
-  .top-scores .item .score{font-size:16px;font-weight:600;color:var(--sber);}
+  .top-scores .item{background:var(--panel-hi);border-radius:4px;padding:6px;text-align:center;
+    cursor:pointer;transition:background 0.15s;}
+  .top-scores .item:hover{background:var(--sber-glow);}
+  .top-scores .item .score{font-size:15px;font-weight:600;color:var(--sber);}
   .top-scores .item .name{font-size:9px;color:var(--muted);margin-top:2px;}
 
-  /* Конкуренты */
-  .competitor-filter{display:flex;gap:12px;align-items:center;margin-bottom:12px;}
+  /* Конкурентная матрица */
+  .competitor-filter{display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
   .competitor-filter select{background:var(--panel-hi);color:var(--text);
     border:1px solid var(--border);padding:6px 10px;border-radius:4px;
     font-family:inherit;font-size:13px;}
-  .competitor-meta{color:var(--muted);font-size:12px;}
   .competitor-table{width:100%;border-collapse:collapse;font-size:13px;
     background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
   .competitor-table th, .competitor-table td{padding:10px 12px;border-bottom:1px solid var(--border);
@@ -162,42 +158,53 @@
   .competitor-table .rate-cell{font-weight:600;}
   .competitor-table a{color:var(--sber);text-decoration:none;}
   .competitor-table a:hover{text-decoration:underline;}
-  .stale-badge{background:#b58900;color:#000;padding:1px 5px;border-radius:3px;
-    font-size:9px;margin-left:4px;font-weight:600;}
+  /* На мобилке — карточки вместо таблицы */
+  .competitor-cards{display:none;}
+  .competitor-cards .comp-card{background:var(--panel);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+  .competitor-cards .comp-card.sber-row{border-color:var(--sber);background:var(--sber-glow);}
+  .competitor-cards .comp-card .cc-head{display:flex;justify-content:space-between;
+    align-items:baseline;margin-bottom:6px;}
+  .competitor-cards .comp-card .cc-bank{font-weight:600;font-size:14px;}
+  .competitor-cards .comp-card .cc-rate{color:var(--sber);font-weight:600;font-size:13px;}
+  .competitor-cards .comp-card .cc-prod{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .competitor-cards .comp-card .cc-usp{color:#9fd8ac;font-size:12px;margin-bottom:4px;}
+  .competitor-cards .comp-card .cc-weak{color:#f0a0a0;font-size:12px;}
+  .competitor-cards .comp-card .cc-link{margin-top:6px;font-size:11px;}
+  .competitor-cards .comp-card .cc-link a{color:var(--sber);}
 
   /* Модалка */
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.75);
     display:none;align-items:center;justify-content:center;z-index:1000;
-    animation:fade 0.15s ease;}
+    animation:fade 0.15s ease;padding:12px;}
   .modal-backdrop.active{display:flex;}
   @keyframes fade{from{opacity:0;}to{opacity:1;}}
   .modal{background:var(--panel-hi);border:1px solid var(--sber);border-radius:8px;
-    padding:24px 28px;max-width:820px;width:94%;max-height:88vh;overflow-y:auto;
+    padding:22px 24px;max-width:820px;width:100%;max-height:92vh;overflow-y:auto;
     position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
-  .modal h3{margin:0 0 4px 0;color:var(--sber);font-size:18px;}
-  .modal .score-line{font-size:14px;color:var(--text);margin-bottom:16px;}
+  .modal h3{margin:0 0 4px 0;color:var(--sber);font-size:17px;}
+  .modal .score-line{font-size:14px;color:var(--text);margin-bottom:14px;}
   .modal .score-line b{color:var(--sber);font-size:20px;}
   .modal .tier-chip{display:inline-block;padding:2px 8px;border-radius:3px;
-    font-size:11px;margin-left:8px;font-weight:600;}
+    font-size:11px;margin-left:6px;font-weight:600;}
   .modal .tier-chip.HIGH{background:var(--high);color:#fff;}
   .modal .tier-chip.MEDIUM{background:var(--medium);color:#000;}
   .modal .tier-chip.LOW{background:var(--low);color:#fff;}
   .modal .freshness-chip{display:inline-block;padding:2px 8px;border-radius:3px;
-    font-size:11px;margin-left:6px;font-weight:600;}
+    font-size:11px;margin-left:4px;font-weight:600;}
   .modal .freshness-chip.fresh{background:var(--fresh);color:#fff;}
   .modal .freshness-chip.aging{background:var(--aging);color:#000;}
   .modal .freshness-chip.stale{background:var(--stale);color:#fff;}
   .modal .freshness-chip.none{background:var(--none);color:#fff;}
   .modal .block-title{font-size:11px;color:var(--muted);text-transform:uppercase;
-    letter-spacing:0.5px;margin-top:20px;margin-bottom:8px;font-weight:600;}
+    letter-spacing:0.5px;margin-top:18px;margin-bottom:8px;font-weight:600;}
   .modal .formula-block{background:var(--bg);border-radius:6px;padding:14px 16px;
     margin:0 0 4px 0;font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:12px;}
   .modal .formula-row{display:flex;justify-content:space-between;padding:5px 0;
     border-bottom:1px dashed var(--border);}
   .modal .formula-row:last-child{border-bottom:none;}
   .modal .formula-row .name{color:var(--muted);}
-  .modal .formula-row .value{color:var(--text);}
-  .modal .formula-row .weight{color:var(--muted);font-size:10px;margin-left:8px;}
+  .modal .formula-row .weight{color:var(--muted);font-size:10px;margin-left:6px;}
   .modal .formula-row .contrib{color:var(--sber);font-weight:600;min-width:56px;text-align:right;}
   .trigger-list{background:var(--bg);border-radius:6px;padding:10px 12px;}
   .trigger-list .trigger{display:flex;justify-content:space-between;padding:6px 0;
@@ -208,8 +215,8 @@
     background:var(--panel-hi);padding:1px 6px;border-radius:3px;}
   .trigger-list .trigger .contrib{color:var(--sber);font-weight:600;min-width:70px;text-align:right;}
   .pub-list{background:var(--bg);border-radius:6px;padding:0;overflow:hidden;}
-  .pub-list .pub{display:grid;grid-template-columns:auto 1fr auto auto auto;
-    gap:10px;align-items:center;padding:8px 12px;border-bottom:1px dashed var(--border);
+  .pub-list .pub{display:grid;grid-template-columns:auto 1fr auto auto;
+    gap:8px;align-items:center;padding:8px 12px;border-bottom:1px dashed var(--border);
     font-size:12px;}
   .pub-list .pub:last-child{border-bottom:none;}
   .pub-list .pub .date{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;
@@ -220,19 +227,48 @@
   .pub-list .pub .title a:hover{color:var(--sber);border-bottom-color:var(--sber);}
   .pub-list .pub .src{color:var(--muted);font-size:10px;
     background:var(--panel-hi);padding:2px 6px;border-radius:3px;}
-  .pub-list .pub .cat{color:var(--muted);font-size:10px;}
   .pub-list .pub .sent{font-size:14px;line-height:1;min-width:16px;text-align:center;}
   .pub-list .pub .sent.pos{color:var(--fresh);}
   .pub-list .pub .sent.neg{color:var(--stale);}
   .pub-list .pub .sent.neu{color:var(--muted);}
-  .modal .close-btn{position:absolute;top:12px;right:16px;background:none;border:none;
-    color:var(--muted);font-size:24px;cursor:pointer;padding:0;width:28px;height:28px;line-height:1;}
+  .modal .close-btn{position:absolute;top:10px;right:14px;background:none;border:none;
+    color:var(--muted);font-size:26px;cursor:pointer;padding:0;width:32px;height:32px;line-height:1;}
   .modal .close-btn:hover{color:var(--text);}
   .modal .foot{margin-top:20px;padding-top:12px;border-top:1px solid var(--border);
     font-size:11px;color:var(--muted);}
   .modal .foot a{color:var(--sber);}
 
-  footer{max-width:1600px;margin:40px auto 0;padding:24px;border-top:1px solid var(--border);
+  /* Drill-down таблица в модалке (регион × продукт) */
+  .drill-table{width:100%;border-collapse:collapse;font-size:13px;
+    background:var(--bg);border-radius:6px;overflow:hidden;}
+  .drill-table th, .drill-table td{padding:9px 12px;
+    border-bottom:1px solid var(--border);text-align:left;}
+  .drill-table th{color:var(--muted);font-size:10px;font-weight:500;
+    text-transform:uppercase;letter-spacing:0.5px;background:var(--panel-hi);}
+  .drill-table tr:last-child td{border-bottom:none;}
+  .drill-table tr.drill-row{cursor:pointer;transition:background 0.15s;}
+  .drill-table tr.drill-row:hover{background:var(--sber-glow);}
+  .drill-table .drill-score{font-weight:600;font-size:14px;text-align:right;
+    font-variant-numeric:tabular-nums;}
+  .drill-table .drill-score.HIGH{color:var(--sber);}
+  .drill-table .drill-score.MEDIUM{color:var(--medium);}
+  .drill-table .drill-score.LOW{color:var(--muted);}
+  .drill-table .drill-tier{font-size:10px;text-transform:uppercase;
+    padding:2px 6px;border-radius:3px;letter-spacing:0.5px;font-weight:600;}
+  .drill-table .drill-tier.HIGH{background:var(--high);color:#fff;}
+  .drill-table .drill-tier.MEDIUM{background:var(--medium);color:#000;}
+  .drill-table .drill-tier.LOW{background:var(--low);color:#fff;}
+  .drill-table .drill-fresh{width:8px;height:8px;border-radius:50%;display:inline-block;
+    margin-right:6px;vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,0.35);}
+  .drill-table .drill-fresh.fresh{background:var(--fresh);}
+  .drill-table .drill-fresh.aging{background:var(--aging);}
+  .drill-table .drill-fresh.stale{background:var(--stale);}
+  .drill-table .drill-fresh.none{background:var(--none);}
+  .drill-table .drill-staff{color:var(--muted);font-size:11px;
+    font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
+  .drill-hint{color:var(--muted);font-size:11px;margin-top:8px;text-align:center;}
+
+  footer{max-width:1500px;margin:36px auto 0;padding:20px;border-top:1px solid var(--border);
     color:var(--muted);font-size:12px;}
   footer a{color:var(--sber);text-decoration:none;}
   footer a:hover{text-decoration:underline;}
@@ -241,50 +277,103 @@
     font-size:10px;text-transform:uppercase;letter-spacing:0.5px;
     background:var(--panel-hi);color:var(--muted);}
   .badge.demo{border:1px solid var(--medium);color:var(--medium);}
+
+  /* ============= МОБИЛЬНАЯ АДАПТАЦИЯ ============= */
+  @media (max-width:768px){
+    main{padding:14px;}
+    h2{font-size:17px;}
+    .section-desc{font-size:12px;}
+    header.sticky{padding:10px 14px;height:52px;}
+    header.sticky h1{font-size:13px;}
+    header.sticky .meta{font-size:10px;}
+    :root{--header-h:52px;}
+
+    .kpi-strip{grid-template-columns:repeat(2,1fr);gap:8px;}
+    .kpi{padding:10px 12px;}
+    .kpi .value{font-size:18px;}
+
+    /* Матрица — меньше ячейки, крепче sticky */
+    table.matrix thead th{
+      min-width:56px;max-width:56px;
+      font-size:10px;height:52px;padding:6px 3px;}
+    table.matrix thead th.corner{
+      min-width:130px;max-width:130px;padding:8px 10px;font-size:11px;}
+    table.matrix tbody th{
+      min-width:130px;max-width:130px;padding:8px 10px;}
+    table.matrix tbody th .region-name{font-size:11px;}
+    table.matrix tbody th .region-meta{font-size:9px;}
+    .agg-cell{min-width:56px;padding:10px 3px;}
+    .agg-cell .score{font-size:13px;}
+    .agg-cell .top-hint{display:none;} /* на мобилке подсказка сжирает место */
+    .legend{font-size:10px;gap:10px;}
+
+    /* Карточки ведомств — в одну колонку */
+    .agency-grid{grid-template-columns:1fr;}
+    .region-nav{padding:8px 10px;}
+    .region-nav a{padding:3px 6px;font-size:11px;}
+
+    /* Конкурентная матрица → карточки */
+    .competitor-table{display:none;}
+    .competitor-cards{display:block;}
+
+    /* Модалка */
+    .modal{padding:18px 16px;border-radius:6px;max-height:94vh;}
+    .modal h3{font-size:15px;}
+    .modal .score-line{font-size:13px;}
+    .modal .score-line b{font-size:18px;}
+    .drill-table th, .drill-table td{padding:8px 8px;font-size:12px;}
+    .drill-table .drill-staff{display:none;} /* убираем колонку штата на узких */
+    .pub-list .pub{grid-template-columns:auto 1fr auto;font-size:11px;}
+    .pub-list .pub .src{display:none;}
+    .formula-row .weight{display:none;}
+  }
+  @media (max-width:400px){
+    table.matrix thead th{min-width:48px;max-width:48px;font-size:9px;padding:5px 2px;}
+    table.matrix tbody th{min-width:110px;max-width:110px;padding:7px 8px;}
+    table.matrix thead th.corner{min-width:110px;max-width:110px;padding:7px 8px;}
+    .agg-cell{min-width:48px;padding:8px 2px;}
+    .agg-cell .score{font-size:12px;}
+  }
 </style>
 </head>
 <body>
 
 <header class="sticky">
   <h1><span class="logo-dot"></span>Силовой периметр СЗФО × Сбер</h1>
-  <div class="meta">v1.3 · 26.08.2026 · <span class="badge demo">демо-модель</span></div>
+  <div class="meta">v1.4 · 26.08.2026 · <span class="badge demo">демо</span></div>
 </header>
 
 <main>
 
   <section>
-    <h2>Потенциал розничных и b2g-продуктов Сбера в силовом сегменте <span class="accent">СЗФО</span></h2>
+    <h2>Потенциал продуктов Сбера в силовом сегменте <span class="accent">СЗФО</span></h2>
     <p class="section-desc">
-      Полная сетка: 10 регионов округа × 9 типов ведомств + 2 окружных структуры = 92 организации.
-      16 продуктов Сбера. Скоринг 0–100 в каждой ячейке. Ключевая ставка ЦБ: <b>14,5%</b>.
+      92 организации (10 регионов × 9 ведомств + окружные), 16 продуктов Сбера.
+      Ключевая ставка ЦБ: <b>14,5%</b>.
     </p>
     <div class="kpi-strip" id="kpi-strip"></div>
   </section>
 
   <section id="matrix-section">
-    <h2>Матрица <span class="accent">ведомство × продукт</span></h2>
+    <h2>Матрица <span class="accent">регион × продукт</span></h2>
     <p class="section-desc">
-      Ведомства сгруппированы по регионам. Клик по ячейке → расшифровка формулы, триггеры, публикации.
-      Точка в углу ячейки — свежесть данных.
+      Скор в ячейке = <b>лучший в регионе</b> по этому продукту.
+      Клик по ячейке → все ведомства региона по этому продукту, отсортированные по скору.
+      Клик по ведомству — расшифровка формулы, триггеры, публикации.
     </p>
-    <div class="region-nav" id="region-nav-matrix"></div>
     <div class="matrix-wrap"><table class="matrix" id="matrix-table"></table></div>
     <div class="legend">
       <span><span class="sw" style="background:rgba(33,160,56,0.35);"></span>HIGH ≥ 65</span>
       <span><span class="sw" style="background:rgba(212,160,23,0.28);"></span>MEDIUM 45–64</span>
       <span><span class="sw" style="background:rgba(74,77,82,0.35);"></span>LOW &lt; 45</span>
-      <span style="border-left:1px solid var(--border);padding-left:16px;margin-left:8px;">
-        Свежесть: <span class="dot" style="background:var(--fresh);"></span>≤ 7 дней
-        <span class="dot" style="background:var(--aging);margin-left:8px;"></span>7–30 дней
-        <span class="dot" style="background:var(--stale);margin-left:8px;"></span>&gt; 30 дней
-        <span class="dot" style="background:var(--none);margin-left:8px;"></span>нет публикаций
-      </span>
     </div>
   </section>
 
   <section id="agencies-section">
-    <h2>Ведомства по регионам — <span class="accent">карточки с тактикой</span></h2>
-    <p class="section-desc">Топ-3 продукта по скору + плейбук по типу ведомства + конкуренты в главном сегменте.</p>
+    <h2>Все ведомства по регионам — <span class="accent">карточки с тактикой</span></h2>
+    <p class="section-desc">
+      Топ-3 продукта по каждому ведомству. Клик по продукту в карточке — та же расшифровка.
+    </p>
     <div class="region-nav" id="region-nav-cards"></div>
     <div id="agency-region-blocks"></div>
   </section>
@@ -292,10 +381,8 @@
   <section id="competitors-section">
     <h2>Конкурентная матрица <span class="accent">(розница)</span></h2>
     <p class="section-desc">
-      Продукты банков-конкурентов Сбера в силовом сегменте. Премиум-уровни: СберПремьер
-      (3–15 млн ₽, vs Т-Премиум/ВТБ Привилегия) и СберПервый (15+ млн ₽, vs ГПБ Приват/ВТБ Прайм).
-      Обновляется еженедельно через GitHub Actions.
-      <span id="competitors-meta" class="competitor-meta"></span>
+      Продукты банков-конкурентов Сбера в силовом сегменте. Премиум: СберПремьер (3–15 млн ₽,
+      vs Т-Премиум/ВТБ Привилегия) и СберПервый (15+ млн ₽, vs ГПБ Приват/ВТБ Прайм).
     </p>
     <div class="competitor-filter">
       <label>Продукт:
@@ -307,44 +394,44 @@
         </select>
       </label>
     </div>
+    <!-- Табличный вид (desktop) -->
     <table class="competitor-table">
       <thead>
         <tr>
           <th style="width:110px;">Банк</th>
           <th style="width:220px;">Продукт</th>
           <th style="width:90px;">Ставка, %</th>
-          <th style="width:130px;">Порог / макс. сумма</th>
+          <th style="width:130px;">Порог / макс.</th>
           <th>УТП / слабость</th>
           <th style="width:40px;">→</th>
         </tr>
       </thead>
       <tbody id="competitor-tbody"></tbody>
     </table>
+    <!-- Карточный вид (мобилка) -->
+    <div class="competitor-cards" id="competitor-cards"></div>
   </section>
 
 </main>
 
 <footer>
   <div>
-    Методология: <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/docs/METHODOLOGY.md" target="_blank">docs/METHODOLOGY.md</a> ·
-    Источники: <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/sources/registry.yaml" target="_blank">sources/registry.yaml</a> ·
-    Обновление данных: <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/.github/workflows/refresh-competitors.yml" target="_blank">GitHub Actions</a>
+    <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/docs/METHODOLOGY.md" target="_blank">Методология</a> ·
+    <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/sources/registry.yaml" target="_blank">Источники</a> ·
+    <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/.github/workflows/refresh-competitors.yml" target="_blank">Автообновление</a>
   </div>
-  <div style="margin-top:8px;">
-    <b>Демо-модель.</b> Штаты ведомств — оценочные (по открытым данным о численности + региональная специфика).
-    Триггеры и публикации в ячейках — демо-данные для иллюстрации формата.
-    Реальный сбор пойдёт через <code>scripts/refresh_competitors.py</code> и категории источников в <code>sources/registry.yaml</code>.
+  <div style="margin-top:6px;">
+    <b>Демо-модель.</b> Штаты ведомств — оценочные. Триггеры и публикации в ячейках — демо-данные.
   </div>
 </footer>
 
 <div class="modal-backdrop" id="scoreModal" onclick="if(event.target.id==='scoreModal') closeScoreModal()">
   <div class="modal">
     <button class="close-btn" onclick="closeScoreModal()">×</button>
-    <h3 id="scoreModal-title">Расшифровка скора</h3>
+    <h3 id="scoreModal-title">Расшифровка</h3>
     <div id="scoreModal-body"></div>
     <div class="foot">
-      Полная методология: <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/docs/METHODOLOGY.md" target="_blank">docs/METHODOLOGY.md</a>.
-      Триггеры и заголовки публикаций — демо-данные, реальный сбор пойдёт через реестр источников.
+      <a href="https://github.com/AlekseiK83/sb-szfo-dashboard/blob/main/docs/METHODOLOGY.md" target="_blank">Полная методология →</a>
     </div>
   </div>
 </div>
@@ -371,152 +458,142 @@ const FRESHNESS_LABELS = {
   stale:'устарели (> 30 дней)', none:'нет публикаций'
 };
 
-function slug(s){return s.replace(/[^a-zA-Zа-яА-Я0-9]/g,'-').toLowerCase();}
+/* ========== Агрегация регион × продукт ========== */
+function aggregateRegionProduct(rid, pk){
+  const rows = DATA.agencies.filter(a=>a.region_id===rid);
+  if(!rows.length) return null;
+  let best = null, sum = 0, n = 0;
+  const items = [];
+  rows.forEach(a=>{
+    const c = a.scores[pk];
+    if(!c) return;
+    items.push({agency:a, cell:c});
+    sum += c.score; n++;
+    if(!best || c.score > best.cell.score) best = {agency:a, cell:c};
+  });
+  items.sort((x,y)=>y.cell.score-x.cell.score);
+  return {
+    best,
+    avg: n ? +(sum/n).toFixed(1) : 0,
+    items, // отсортированные по скору
+    count: n,
+  };
+}
+
+function tierOf(s){return s>=65?'HIGH':(s>=45?'MEDIUM':'LOW');}
 
 function groupAgenciesByRegion(){
   const byR = {};
   DATA.agencies.forEach(a=>{
     (byR[a.region_id] = byR[a.region_id]||[]).push(a);
   });
-  // Порядок регионов
-  const ordered = Object.entries(DATA.regions)
+  return Object.entries(DATA.regions)
     .sort((x,y)=>x[1].order - y[1].order)
     .filter(([rid])=>byR[rid])
     .map(([rid, rmeta])=>({rid, rname:rmeta.name, agencies:byR[rid]}));
-  return ordered;
 }
 
 function renderKPIs(){
   const totalStaff = DATA.agencies.reduce((s,a)=>s+a.staff,0);
-  let h=0,m=0,l=0;
-  DATA.agencies.forEach(a=>Object.values(a.scores).forEach(c=>{
-    if(c.tier==='HIGH')h++; else if(c.tier==='MEDIUM')m++; else l++;}));
+  const groups = groupAgenciesByRegion();
+  // Считаем сколько регионов имеют хоть один HIGH
+  let regionHigh = 0;
+  groups.forEach(g=>{
+    const hasHigh = Object.keys(DATA.products).some(pk=>{
+      const agg = aggregateRegionProduct(g.rid, pk);
+      return agg?.best?.cell?.tier === 'HIGH';
+    });
+    if(hasHigh) regionHigh++;
+  });
   document.getElementById('kpi-strip').innerHTML = [
-    {label:'Ведомств',value:DATA.agencies.length,sub:'10 регионов × 9 типов + 2 окружных'},
-    {label:'Регионов СЗФО',value:10,sub:'+ окружные структуры'},
-    {label:'Совокупный штат',value:(totalStaff/1000).toFixed(0)+' тыс',sub:'потенциальная база'},
-    {label:'Продуктов Сбера',value:Object.keys(DATA.products).length,sub:'11 core + 5 eco'},
-    {label:'HIGH-сегментов',value:h,sub:'приоритет ≥ 65 баллов'},
+    {label:'Регионов СЗФО',value:10,sub:'+ окружные'},
+    {label:'Ведомств',value:DATA.agencies.length,sub:'в полной сетке'},
+    {label:'Штат (тыс)',value:(totalStaff/1000).toFixed(0),sub:'база сегмента'},
+    {label:'Продуктов',value:Object.keys(DATA.products).length,sub:'11 core + 5 eco'},
+    {label:'HIGH-регионов',value:regionHigh,sub:'где есть тир HIGH'},
   ].map(k=>`<div class="kpi">
     <div class="label">${k.label}</div><div class="value">${k.value}</div><div class="sub">${k.sub}</div>
   </div>`).join('');
 }
 
-function renderRegionNav(containerId, prefix){
-  const groups = groupAgenciesByRegion();
-  const html = '<span class="label">Перейти:</span>' +
-    groups.map(g=>`<a href="#${prefix}-${g.rid}">${g.rname}</a>`).join('');
-  document.getElementById(containerId).innerHTML = html;
-}
-
-function renderMatrix(){
+/* ========== Матрица регионы × продукты (10×16) ========== */
+function renderCompactMatrix(){
   const products = Object.entries(DATA.products);
   const groups = groupAgenciesByRegion();
-  const colCount = products.length + 1;
-  let html = '<thead><tr><th class="corner">Ведомство</th>';
+  let html = '<thead><tr><th class="corner">Регион</th>';
   html += products.map(([pk,p])=>`<th title="${p.name}">${p.short_name}</th>`).join('');
   html += '</tr></thead><tbody>';
 
   groups.forEach(g=>{
-    html += `<tr class="region-header" id="matrix-${g.rid}">
-      <th colspan="${colCount}">${g.rname}
-        <span class="region-count">${g.agencies.length} ведомств</span>
-      </th></tr>`;
-    g.agencies.forEach(a=>{
-      const typeName = DATA.agency_types?.[a.type]?.name || a.type;
-      html += `<tr><th>
-        <div><span class="type-tag">${typeName}</span>${a.name}</div>
-        <div class="staff">${a.staff.toLocaleString('ru-RU')} чел.</div></th>`;
-      products.forEach(([pk,p])=>{
-        const c = a.scores[pk];
-        const fresh = c.freshness || 'none';
-        html += `<td class="score-cell tier-${c.tier}"
-          title="${a.short} × ${p.name}: ${c.score} (${c.tier}). Свежесть: ${FRESHNESS_LABELS[fresh]}"
-          onclick="openScoreModal('${a.id}','${pk}')">
-          ${c.score.toFixed(0)}
-          <span class="freshness-dot ${fresh}" title="Свежесть: ${FRESHNESS_LABELS[fresh]}"></span>
-          <button class="why-btn" onclick="event.stopPropagation();openScoreModal('${a.id}','${pk}')" title="Расшифровка">?</button>
-        </td>`;
-      });
-      html += '</tr>';
+    html += `<tr><th>
+      <div class="region-name">${g.rname}</div>
+      <div class="region-meta">${g.agencies.length} ведомств</div></th>`;
+    products.forEach(([pk,p])=>{
+      const agg = aggregateRegionProduct(g.rid, pk);
+      if(!agg || !agg.best){
+        html += `<td class="agg-cell tier-LOW"><div class="score">—</div></td>`;
+        return;
+      }
+      const s = agg.best.cell.score;
+      const tier = agg.best.cell.tier;
+      const topName = agg.best.agency.short.replace(/\s*\([^)]*\)/,'');
+      html += `<td class="agg-cell tier-${tier}"
+        title="${g.rname} × ${p.name}: макс ${s} (${agg.best.agency.short}), среднее ${agg.avg}, ${agg.count} ведомств"
+        onclick="openRegionProductModal('${g.rid}','${pk}')">
+        <div class="score">${s.toFixed(0)}</div>
+        <div class="top-hint">${topName}</div>
+      </td>`;
     });
+    html += '</tr>';
   });
   html += '</tbody>';
   document.getElementById('matrix-table').innerHTML = html;
 }
 
-function renderAgencyCompetitorStrip(topProductKey){
-  const rows = (DATA.competitor_matrix?.[topProductKey])||[];
-  if(!rows.length) return '';
-  const rivals = rows.filter(r=>r.bank!=='sber').slice(0,3);
-  if(!rivals.length) return '';
-  return `<div class="agency-competitor-strip">
-    <span class="label">Обыгрываем:</span>
-    ${rivals.map(r=>`<span class="rival"><b>${BANK_NAMES[r.bank]||r.bank}</b></span>`).join('')}
-  </div>`;
+/* ========== Модалка "Регион × Продукт" — drill-down ========== */
+function openRegionProductModal(rid, pk){
+  const rmeta = DATA.regions[rid];
+  const p = DATA.products[pk];
+  const agg = aggregateRegionProduct(rid, pk);
+  if(!agg) return;
+  const body = `
+    <div class="score-line">
+      <b>${agg.best.cell.score.toFixed(0)}</b>
+      <span class="tier-chip ${agg.best.cell.tier}">${agg.best.cell.tier}</span>
+      &nbsp;·&nbsp; ${rmeta.name} × ${p.name}
+      <div style="color:var(--muted);font-size:12px;margin-top:6px;">
+        Лидер сегмента: <b style="color:var(--text);">${agg.best.agency.short}</b> ·
+        Среднее по региону: ${agg.avg} · Ведомств: ${agg.count}
+      </div>
+    </div>
+    <div class="block-title">Все ведомства региона (клик → расшифровка формулы)</div>
+    <table class="drill-table">
+      <thead><tr>
+        <th></th>
+        <th>Ведомство</th>
+        <th class="drill-staff" style="text-align:right;">Штат</th>
+        <th style="text-align:right;">Скор</th>
+        <th>Тир</th>
+      </tr></thead>
+      <tbody>
+      ${agg.items.map(({agency,cell})=>`
+        <tr class="drill-row" onclick="closeScoreModal();setTimeout(()=>openScoreModal('${agency.id}','${pk}'),120);">
+          <td><span class="drill-fresh ${cell.freshness||'none'}"
+              title="${FRESHNESS_LABELS[cell.freshness||'none']}"></span></td>
+          <td>${agency.name}</td>
+          <td class="drill-staff">${agency.staff.toLocaleString('ru-RU')}</td>
+          <td class="drill-score ${cell.tier}">${cell.score.toFixed(0)}</td>
+          <td><span class="drill-tier ${cell.tier}">${cell.tier}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+    <div class="drill-hint">Клик по ведомству → полная расшифровка (формула, триггеры, публикации)</div>`;
+  document.getElementById('scoreModal-title').textContent = `${rmeta.name} × ${p.name}`;
+  document.getElementById('scoreModal-body').innerHTML = body;
+  document.getElementById('scoreModal').classList.add('active');
 }
 
-function renderAgencies(){
-  const groups = groupAgenciesByRegion();
-  document.getElementById('agency-region-blocks').innerHTML = groups.map(g=>{
-    const cards = g.agencies.map(a=>{
-      const pb = DATA.playbooks[a.type]||{};
-      const top3 = Object.entries(a.scores)
-        .map(([pk,c])=>({pk,name:DATA.products[pk].short_name,score:c.score,tier:c.tier}))
-        .sort((x,y)=>y.score-x.score).slice(0,3);
-      return `<div class="agency-card">
-        <div class="head">
-          <div><div class="name">${a.name}</div><div class="region">${a.region}</div></div>
-          <span class="staff-badge">${a.staff.toLocaleString('ru-RU')} чел.</span>
-        </div>
-        ${pb.top_product?`
-          <div class="playbook-badge">
-            <span class="tag">★ Тактика</span>
-            <div class="top-product">Приоритет: ${DATA.products[pb.top_product]?.short_name}</div>
-            <div>${pb.angle}</div>
-          </div>
-          ${renderAgencyCompetitorStrip(pb.top_product)}`:''}
-        <div class="top-scores">
-          ${top3.map(t=>`<div class="item">
-            <div class="score" style="color:${t.tier==='HIGH'?'var(--sber)':t.tier==='MEDIUM'?'var(--medium)':'var(--muted)'};">${t.score.toFixed(0)}</div>
-            <div class="name">${t.name}</div>
-          </div>`).join('')}
-        </div>
-      </div>`;
-    }).join('');
-    return `<div class="region-block" id="cards-${g.rid}">
-      <div class="region-block-title">${g.rname} · ${g.agencies.length} ведомств</div>
-      <div class="agency-grid">${cards}</div>
-    </div>`;
-  }).join('');
-}
-
-function renderCompetitors(){
-  const pk = document.getElementById('competitor-product-filter').value;
-  const rows = (DATA.competitor_matrix?.[pk])||[];
-  const meta = DATA.competitor_matrix_meta||{};
-  document.getElementById('competitors-meta').textContent =
-    meta.last_refresh_attempt?`Последнее обновление: ${meta.last_refresh_attempt}.`:'';
-  const fmtAmount = v=>v==null?'—':(v>=1_000_000?(v/1_000_000).toFixed(1)+' млн ₽':(v/1000).toFixed(0)+' тыс ₽');
-  const fmtRate = (mn,mx)=>{
-    if(mn==null) return '—';
-    if(mn===0&&mx!=null) return `0–${mx}`;
-    if(mx!=null&&mx!==mn) return `${mn}–${mx}`;
-    return `от ${mn}`;
-  };
-  const tbody = document.getElementById('competitor-tbody');
-  if(!rows.length){
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Нет данных</td></tr>';return;}
-  tbody.innerHTML = rows.map(r=>`<tr class="${r.bank==='sber'?'sber-row':''}">
-    <td><b>${BANK_NAMES[r.bank]||r.bank}</b>${r.is_stale?'<span class="stale-badge">stale</span>':''}</td>
-    <td>${r.product_name}</td>
-    <td class="rate-cell">${fmtRate(r.rate_min,r.rate_max)}</td>
-    <td>${fmtAmount(r.max_amount_rub)}</td>
-    <td><div class="usp">✓ ${r.usp}</div><div class="weakness">✗ ${r.weakness}</div></td>
-    <td><a href="${r.source_url}" target="_blank" rel="noopener">→</a></td>
-  </tr>`).join('');
-}
-
+/* ========== Модалка "Ведомство × Продукт" — полная расшифровка ========== */
 function openScoreModal(agencyId, productKey){
   const a = DATA.agencies.find(x=>x.id===agencyId);
   const p = DATA.products[productKey];
@@ -530,17 +607,15 @@ function openScoreModal(agencyId, productKey){
     const v = c[k]??0;
     return `<div class="formula-row">
       <span><span class="name">${k}</span><span class="weight">× ${w}</span></span>
-      <span><span class="value">${v.toFixed(3)}</span> <span class="contrib">+${(v*w*100).toFixed(1)}</span></span>
+      <span><span class="contrib">+${(v*w*100).toFixed(1)}</span></span>
     </div>`;
   }).join('');
   const anchorRow = isEco && c.anchor
     ? `<div class="formula-row" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;">
-        <span><span class="name">anchor</span><span class="weight">(бонус за зарплатник Сбера)</span></span>
+        <span><span class="name">anchor</span></span>
         <span><span class="contrib">+${(c.anchor*100).toFixed(1)}</span></span>
       </div>` : '';
   const fresh = c.freshness || 'none';
-  const freshLabel = FRESHNESS_LABELS[fresh];
-  const lastPub = c.last_pub_days_ago;
   const triggersHtml = (c.triggers_fired||[]).length
     ? `<div class="trigger-list">${c.triggers_fired.map(t=>`
         <div class="trigger">
@@ -557,29 +632,27 @@ function openScoreModal(agencyId, productKey){
           <span class="date">${e.date}</span>
           <span class="title"><a href="${e.url}" target="_blank" rel="noopener">${e.title}</a></span>
           <span class="src">${e.source_domain}</span>
-          <span class="cat">${CATEGORY_LABELS[e.source_category]||e.source_category}</span>
-          <span class="sent ${sentClass}" title="sentiment: ${e.sentiment}">${sentIcon}</span>
+          <span class="sent ${sentClass}">${sentIcon}</span>
         </div>`;}).join('')}</div>`
     : `<div style="color:var(--muted);font-size:12px;">Публикаций не обнаружено.</div>`;
   const body = `
     <div class="score-line">
       <b>${c.score}</b>
       <span class="tier-chip ${c.tier}">${c.tier}</span>
-      <span class="freshness-chip ${fresh}">${freshLabel}</span>
+      <span class="freshness-chip ${fresh}">${FRESHNESS_LABELS[fresh]}</span>
       &nbsp;·&nbsp; ${a.short} × ${p.name}
     </div>
     <div class="block-title">Формула</div>
     <div class="formula-block">${formulaRows}${anchorRow}</div>
     <div style="font-size:12px;color:var(--muted);margin-top:6px;">
-      <b>demand_signal:</b> ${c.demand_signal} (порог 20) ·
-      <b>avg_sentiment:</b> ${c.avg_sentiment} по ${c.sentiment_sample} источникам
+      demand_signal: ${c.demand_signal}/20 · avg_sentiment: ${c.avg_sentiment}
     </div>
     <div class="block-title">Сработавшие триггеры</div>
     ${triggersHtml}
     <div class="block-title">
-      Публикации в анализе (${(c.evidence||[]).length})
-      ${lastPub!=null?`<span style="color:var(--muted);font-weight:400;margin-left:8px;">
-        Последняя: ${lastPub===1?'1 день':(lastPub<5?lastPub+' дня':lastPub+' дней')} назад
+      Публикации (${(c.evidence||[]).length})
+      ${c.last_pub_days_ago!=null?`<span style="color:var(--muted);font-weight:400;margin-left:8px;">
+        Последняя: ${c.last_pub_days_ago===1?'1 день':(c.last_pub_days_ago<5?c.last_pub_days_ago+' дня':c.last_pub_days_ago+' дней')} назад
       </span>`:''}
     </div>
     ${pubsHtml}`;
@@ -590,11 +663,91 @@ function openScoreModal(agencyId, productKey){
 function closeScoreModal(){document.getElementById('scoreModal').classList.remove('active');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape') closeScoreModal();});
 
+/* ========== Карточки ведомств по регионам ========== */
+function renderRegionNav(){
+  const groups = groupAgenciesByRegion();
+  document.getElementById('region-nav-cards').innerHTML = '<span class="label">Перейти:</span>' +
+    groups.map(g=>`<a href="#cards-${g.rid}">${g.rname}</a>`).join('');
+}
+
+function renderAgencies(){
+  const groups = groupAgenciesByRegion();
+  document.getElementById('agency-region-blocks').innerHTML = groups.map(g=>{
+    const cards = g.agencies.map(a=>{
+      const pb = DATA.playbooks[a.type]||{};
+      const typeName = DATA.agency_types?.[a.type]?.name || a.type;
+      const top3 = Object.entries(a.scores)
+        .map(([pk,c])=>({pk,name:DATA.products[pk].short_name,score:c.score,tier:c.tier}))
+        .sort((x,y)=>y.score-x.score).slice(0,3);
+      return `<div class="agency-card">
+        <div class="head">
+          <div><div class="name"><span class="type-tag">${typeName}</span>${a.name}</div></div>
+          <span class="staff-badge">${a.staff.toLocaleString('ru-RU')}</span>
+        </div>
+        ${pb.top_product?`<div class="playbook-badge">
+            <div class="top-product">★ ${DATA.products[pb.top_product]?.short_name}</div>
+            <div style="font-size:11px;">${pb.angle}</div>
+          </div>`:''}
+        <div class="top-scores">
+          ${top3.map(t=>`<div class="item" onclick="openScoreModal('${a.id}','${t.pk}')">
+            <div class="score" style="color:${t.tier==='HIGH'?'var(--sber)':t.tier==='MEDIUM'?'var(--medium)':'var(--muted)'};">${t.score.toFixed(0)}</div>
+            <div class="name">${t.name}</div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="region-block" id="cards-${g.rid}">
+      <div class="region-block-title">
+        <span>${g.rname}</span>
+        <span class="count">${g.agencies.length} ведомств</span>
+      </div>
+      <div class="agency-grid">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ========== Конкурентная матрица (desktop + mobile) ========== */
+function renderCompetitors(){
+  const pk = document.getElementById('competitor-product-filter').value;
+  const rows = (DATA.competitor_matrix?.[pk])||[];
+  const fmtAmount = v=>v==null?'—':(v>=1_000_000?(v/1_000_000).toFixed(1)+' млн ₽':(v/1000).toFixed(0)+' тыс ₽');
+  const fmtRate = (mn,mx)=>{
+    if(mn==null) return '—';
+    if(mn===0&&mx!=null) return `0–${mx}`;
+    if(mx!=null&&mx!==mn) return `${mn}–${mx}`;
+    return `от ${mn}`;
+  };
+  const tbody = document.getElementById('competitor-tbody');
+  const cards = document.getElementById('competitor-cards');
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Нет данных</td></tr>';
+    cards.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;">Нет данных</div>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r=>`<tr class="${r.bank==='sber'?'sber-row':''}">
+    <td><b>${BANK_NAMES[r.bank]||r.bank}</b></td>
+    <td>${r.product_name}</td>
+    <td class="rate-cell">${fmtRate(r.rate_min,r.rate_max)}</td>
+    <td>${fmtAmount(r.max_amount_rub)}</td>
+    <td><div class="usp">✓ ${r.usp}</div><div class="weakness">✗ ${r.weakness}</div></td>
+    <td><a href="${r.source_url}" target="_blank" rel="noopener">→</a></td>
+  </tr>`).join('');
+  cards.innerHTML = rows.map(r=>`<div class="comp-card ${r.bank==='sber'?'sber-row':''}">
+    <div class="cc-head">
+      <div class="cc-bank">${BANK_NAMES[r.bank]||r.bank}</div>
+      <div class="cc-rate">${fmtRate(r.rate_min,r.rate_max)}${r.rate_min!=null?'%':''}</div>
+    </div>
+    <div class="cc-prod">${r.product_name} · ${fmtAmount(r.max_amount_rub)}</div>
+    <div class="cc-usp">✓ ${r.usp}</div>
+    <div class="cc-weak">✗ ${r.weakness}</div>
+    <div class="cc-link"><a href="${r.source_url}" target="_blank" rel="noopener">Открыть страницу банка →</a></div>
+  </div>`).join('');
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   renderKPIs();
-  renderRegionNav('region-nav-matrix','matrix');
-  renderMatrix();
-  renderRegionNav('region-nav-cards','cards');
+  renderCompactMatrix();
+  renderRegionNav();
   renderAgencies();
   renderCompetitors();
 });
